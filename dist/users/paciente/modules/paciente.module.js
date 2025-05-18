@@ -1,0 +1,54 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PacienteModule = void 0;
+const common_1 = require("@nestjs/common");
+const paciente_service_1 = require("./../services/paciente.service");
+const paciente_controller_1 = require("./../controllers/paciente.controller");
+const typeorm_1 = require("@nestjs/typeorm");
+const user_entity_1 = require("../../entities/user.entity");
+const funcionario_entity_1 = require("../../entities/funcionario.entity");
+const medico_entity_1 = require("../../entities/medico.entity");
+const paciente_entity_1 = require("../../paciente/entities/paciente.entity");
+const prescricao_entity_1 = require("../../entities/prescricao.entity");
+const medicamento_entity_1 = require("../../entities/medicamento.entity");
+const leito_entity_1 = require("../../entities/leito.entity");
+const internacao_entity_1 = require("../../entities/internacao.entity");
+const prontuario_entity_1 = require("../../entities/prontuario.entity");
+const historico_paciente_entity_1 = require("../../entities/historico-paciente.entity");
+const funcionario_internacao_entity_1 = require("../../entities/funcionario-internacao.entity");
+const estoque_medicamentos_entity_1 = require("../../entities/estoque-medicamentos.entity");
+const paciente_medicamento_entity_1 = require("../../entities/paciente-medicamento.entity");
+let PacienteModule = class PacienteModule {
+};
+exports.PacienteModule = PacienteModule;
+exports.PacienteModule = PacienteModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([
+                user_entity_1.User,
+                funcionario_entity_1.Funcionario,
+                medico_entity_1.Medico,
+                paciente_entity_1.Paciente,
+                prescricao_entity_1.Prescricao,
+                medicamento_entity_1.Medicamento,
+                leito_entity_1.Leito,
+                internacao_entity_1.Internacao,
+                prontuario_entity_1.Prontuario,
+                historico_paciente_entity_1.HistoricoPaciente,
+                funcionario_internacao_entity_1.FuncionarioInternacao,
+                estoque_medicamentos_entity_1.EstoqueMedicamentos,
+                paciente_medicamento_entity_1.PacienteMedicamento,
+            ]),
+        ],
+        controllers: [paciente_controller_1.PacienteController],
+        providers: [paciente_service_1.PacienteService],
+        exports: [paciente_service_1.PacienteService]
+    })
+], PacienteModule);
+//# sourceMappingURL=paciente.module.js.map

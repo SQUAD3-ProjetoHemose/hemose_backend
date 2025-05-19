@@ -27,3 +27,10 @@ import { LocalStrategy } from './strategies/local.strategy';
   exports: [AuthService],
 })
 export class AuthModule {}
+            
+/*             
+  __  ____ ____ _  _ 
+ / _\/ ___) ___) )( \
+/    \___ \___ ) \/ (
+\_/\_(____(____|____/
+*/

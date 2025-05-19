@@ -9,4 +9,14 @@ export default registerAs('database', () => ({
   database: process.env.DB_DATABASE,
   entities: ['dist/**/*.entity{.ts,.js}'],
   synchronize: true, // Não usar em produção
+  charset: 'utf8mb4', // Suporte completo a Unicode incluindo emojis
+  schema: 'hemose_db', // Define o schema específico no banco de dados
 }));
+
+            
+/*             
+  __  ____ ____ _  _ 
+ / _\/ ___) ___) )( \
+/    \___ \___ ) \/ (
+\_/\_(____(____|____/
+*/

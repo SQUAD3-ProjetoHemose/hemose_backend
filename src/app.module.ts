@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import databaseConfig from './config/database.config';
-import { AuthModule } from './auth/auth.module'; // Import AuthModule
-import { UsersModule } from './users/users.module'; // Import UsersModule
+import { UsersModule } from './users/users.module';
 import { PacienteModule } from './users/paciente/modules/paciente.module';
+import { SeedModule } from './seed/seed.module';
+import databaseConfig from './config/database.config';
+import { AuthModule } from './auth/auth.module'; 
+import { AgendamentoModule } from './agendamentos/agendamento.module';
 
 @Module({
   imports: [
@@ -16,16 +16,24 @@ import { PacienteModule } from './users/paciente/modules/paciente.module';
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
         ...configService.get('database'),
       }),
-      inject: [ConfigService],
     }),
-    AuthModule, // Add AuthModule
-    UsersModule, // Add UsersModule
+    UsersModule,
     PacienteModule,
+    SeedModule, 
+    AgendamentoModule,
+    AuthModule, 
+    
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
+            
+/*             
+  __  ____ ____ _  _ 
+ / _\/ ___) ___) )( \
+/    \___ \___ ) \/ (
+\_/\_(____(____|____/
+*/

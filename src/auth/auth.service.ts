@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -12,23 +13,29 @@ export class AuthService {
 
   async validateUser(email: string, senha: string): Promise<any> {
     console.log(`Validando usuário com email: ${email}`);
-    const user = await this.usersService.findByEmail(email);
+    try {
+      const user = await this.usersService.findByEmail(email);
 
-    if (!user) {
-      console.log('Usuário não encontrado.');
+      if (!user) {
+        console.log('Usuário não encontrado.');
+        return null;
+      }
+
+      // Comparar a senha fornecida com o hash armazenado usando bcrypt
+      const isPasswordValid = await bcrypt.compare(senha, user.senha);
+      console.log(`Senha válida: ${isPasswordValid}`);
+
+      if (isPasswordValid) {
+        // Se a senha for válida, retorna o usuário sem a senha
+        const { senha, ...result } = user;
+        return result;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Erro ao validar usuário:', error);
       return null;
     }
-
-    // Comparação direta da senha sem criptografia
-    const isPasswordValid = senha === user.senha;
-    console.log(`Senha válida: ${isPasswordValid}`);
-
-    if (isPasswordValid) {
-      const { senha, ...result } = user;
-      return result;
-    }
-
-    return null;
   }
 
   async login(loginDto: LoginDto) {
@@ -60,3 +67,10 @@ export class AuthService {
     };
   }
 }
+            
+/*             
+  __  ____ ____ _  _ 
+ / _\/ ___) ___) )( \
+/    \___ \___ ) \/ (
+\_/\_(____(____|____/
+*/

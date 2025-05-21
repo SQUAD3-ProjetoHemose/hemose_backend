@@ -17,27 +17,29 @@ import { EstoqueMedicamentos } from '../../entities/estoque-medicamentos.entity'
 import { PacienteMedicamento } from '../../entities/paciente-medicamento.entity';
 import { UsersService } from '../../users.service';
 import { UsersController } from '../../users.controller';
+import { Agendamento } from '../../../agendamentos/entities/agendamento.entity';
 
 @Module({
   imports: [
-      TypeOrmModule.forFeature([
-        User,
-        Funcionario,
-        Medico,
-        Paciente,
-        Prescricao,
-        Medicamento,
-        Leito,
-        Internacao,
-        Prontuario,
-        HistoricoPaciente,
-        FuncionarioInternacao,
-        EstoqueMedicamentos,
-        PacienteMedicamento,
-      ]),
-    ],
+    TypeOrmModule.forFeature([
+      User,
+      Funcionario,
+      Medico,
+      Paciente,
+      Prescricao,
+      Medicamento,
+      Leito,
+      Internacao,
+      Prontuario,
+      HistoricoPaciente,
+      FuncionarioInternacao,
+      EstoqueMedicamentos,
+      PacienteMedicamento,
+      Agendamento, // Adicionada a entidade Agendamento aqui
+    ]),
+  ],
   controllers: [PacienteController],
   providers: [PacienteService],
-  exports: [PacienteService]
+  exports: [PacienteService],
 })
 export class PacienteModule {}

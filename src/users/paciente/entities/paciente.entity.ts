@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
 import { Prescricao } from '../../entities/prescricao.entity';
 import { Internacao } from '../../entities/internacao.entity';
 
@@ -31,10 +38,13 @@ export class Paciente {
   @Column({ type: 'text', nullable: true })
   historico_medico: string;
 
-  @OneToMany(() => Prescricao, prescricao => prescricao.paciente)
+  @Column({ default: false })
+  deletado: boolean;
+
+  @OneToMany(() => Prescricao, (prescricao) => prescricao.paciente)
   prescricoes: Prescricao[];
 
-  @OneToMany(() => Internacao, internacao => internacao.paciente)
+  @OneToMany(() => Internacao, (internacao) => internacao.paciente)
   internacoes: Internacao[];
 
   @CreateDateColumn()

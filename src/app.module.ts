@@ -26,7 +26,6 @@ import { AgendamentoModule } from './agendamentos/agendamento.module';
     SeedModule, 
     AgendamentoModule,
     AuthModule, 
-    
   ],
 })
 export class AppModule {}

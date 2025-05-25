@@ -7,6 +7,9 @@ import { SeedModule } from './seed/seed.module';
 import databaseConfig from './config/database.config';
 import { AuthModule } from './auth/auth.module'; 
 import { AgendamentoModule } from './agendamentos/agendamento.module';
+import { AuditModule } from './audit/audit.module';
+import { ReportsModule } from './reports/reports.module';
+import { ProntuarioEletronicoModule } from './prontuario-eletronico/prontuario-eletronico.module';
 
 @Module({
   imports: [
@@ -25,7 +28,10 @@ import { AgendamentoModule } from './agendamentos/agendamento.module';
     PacienteModule,
     SeedModule, 
     AgendamentoModule,
-    AuthModule, 
+    AuthModule,
+    AuditModule,
+    ReportsModule,
+    ProntuarioEletronicoModule,
   ],
 })
 export class AppModule {}

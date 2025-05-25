@@ -2,25 +2,27 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } f
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-// Import Guards and Decorators later for authorization
-// import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-// import { RolesGuard } from '../auth/guards/roles.guard';
-// import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Audit } from '../common/decorators/audit.decorator';
 import { UserRole } from './enums/user-role.enum';
 
 @Controller('users')
-// @UseGuards(JwtAuthGuard, RolesGuard) // Apply guards globally or per route later
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @Roles(UserRole.ADMIN) // Only admin can create users
   @Post()
+  @Roles(UserRole.ADMIN)
+  @Audit({ action: 'CREATE', resource: 'User', includeBody: true, excludeFields: ['password'] })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
-  // @Roles(UserRole.ADMIN) // Only admin can view all users
   @Get()
+  @Roles(UserRole.ADMIN)
+  @Audit({ action: 'LIST', resource: 'User' })
   findAll(@Query('role') role?: UserRole) {
     if (role) {
       return this.usersService.findAllByRole(role);

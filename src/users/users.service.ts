@@ -74,6 +74,21 @@ export class UsersService {
     }
   }
 
+  // Método específico para autenticação - não lança exceção se não encontrar
+  async findByEmailForAuth(email: string): Promise<User | null> {
+    try {
+      const user = await this.usersRepository.findOne({ where: { email } });
+      if (!user) {
+        this.logger.warn(`Usuário não encontrado para autenticação: ${email}`);
+        return null;
+      }
+      return user;
+    } catch (error) {
+      this.logger.error(`Erro ao buscar usuário para autenticação: ${error.message}`);
+      return null;
+    }
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
     

@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { UserRole } from '../enums/user-role.enum';
 
 @Entity('usuarios')
@@ -6,24 +6,36 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 100 })
+  @Column({ type: 'varchar', length: 255 })
   nome: string;
 
-  @Column({ length: 100, unique: true })
+  @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
 
-  @Column()
-  senha: string; // Será armazenada com hash
+  @Column({ type: 'varchar', length: 255 })
+  senha: string;
 
-  @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.RECEPCIONISTA
+  // Usar VARCHAR em vez de enum para compatibilidade com SQLite
+  @Column({ 
+    type: 'varchar', 
+    length: 50,
+    default: UserRole.MEDICO 
   })
   tipo: UserRole;
 
-  @Column({ default: true })
+  @Column({ type: 'boolean', default: true })
   ativo: boolean;
+
+  // Campos específicos para médicos
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  especialidade?: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  crm?: string;
+
+  // Campo específico para enfermeiras
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  coren?: string;
 
   @CreateDateColumn()
   created_at: Date;
@@ -31,3 +43,10 @@ export class User {
   @UpdateDateColumn()
   updated_at: Date;
 }
+
+/* 
+  __  ____ ____ _  _ 
+ / _\/ ___) ___) )( \
+/    \___ \___ ) \/ (
+\_/\_(____(____|____/
+*/

@@ -29,14 +29,16 @@ export class Agendamento {
   horario: string;
 
   @Column({
-    type: 'enum',
+    type: 'varchar',
+    length: 255,
     enum: StatusAgendamento,
     default: StatusAgendamento.AGENDADO,
   })
   status: StatusAgendamento;
 
   @Column({
-    type: 'enum',
+    type: 'varchar',
+    length: 50,
     enum: TipoAgendamento,
     default: TipoAgendamento.CONSULTA,
   })

@@ -34,7 +34,8 @@ export class Exame {
   nomeExame: string;
 
   @Column({
-    type: 'enum',
+    type: 'varchar',
+    length: 50,
     enum: TipoExame,
     default: TipoExame.LABORATORIAL,
   })
@@ -44,7 +45,8 @@ export class Exame {
   descricao: string;
 
   @Column({
-    type: 'enum',
+    type: 'varchar',
+    length: 50,
     enum: StatusExame,
     default: StatusExame.SOLICITADO,
   })

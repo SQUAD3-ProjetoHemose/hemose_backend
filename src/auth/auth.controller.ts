@@ -5,6 +5,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Roles } from './decorators/roles.decorator';
 import { UserRole } from '../users/enums/user-role.enum';
 import { RolesGuard } from './guards/roles.guard';
+import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -12,6 +13,7 @@ export class AuthController {
 
   constructor(private readonly authService: AuthService) {}
 
+  @Public() // Marcar como rota pública para não ser interceptada pelo JwtAuthGuard
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     this.logger.log(`Tentativa de login recebida para: ${loginDto.email}`);
@@ -19,18 +21,26 @@ export class AuthController {
     try {
       const result = await this.authService.login(loginDto);
 
+      // Se o login falhou, retornar erro HTTP 401
       if (!result.success) {
         this.logger.warn(`Falha no login para ${loginDto.email}: ${result.message}`);
-        throw new HttpException(result.message || 'Acesso não autorizado', HttpStatus.UNAUTHORIZED); // Garante que sempre será uma string
+        throw new HttpException('Credenciais inválidas', HttpStatus.UNAUTHORIZED);
       }
 
       this.logger.log(`Login bem-sucedido para: ${loginDto.email}`);
       return result;
     } catch (error) {
       this.logger.error(`Erro no login: ${error.message}`);
+      
+      // Se já é uma HttpException, re-lançar
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      
+      // Caso contrário, lançar erro interno do servidor
       throw new HttpException(
-        error.message || 'Ocorreu um erro no processo de login',
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        'Erro interno do servidor',
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -38,7 +48,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
-    return req.user;
+    return { user: req.user };
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

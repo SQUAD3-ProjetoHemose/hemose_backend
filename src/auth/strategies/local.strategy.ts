@@ -6,16 +6,25 @@ import { AuthService } from '../auth.service';
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
-    // By default, Passport-Local expects 'username' and 'password'. 
-    // We configure it to use 'email' instead of 'username'.
-    super({ usernameField: 'email' });
+    super({
+      usernameField: 'email', // Usar email como campo de username
+      passwordField: 'password', // Campo de senha
+    });
   }
 
-  async validate(email: string, senha: string): Promise<any> {
-    const user = await this.authService.validateUser(email, senha);
+  // Método de validação chamado pelo Passport
+  async validate(email: string, password: string): Promise<any> {
+    const user = await this.authService.validateUser(email, password);
     if (!user) {
       throw new UnauthorizedException('Credenciais inválidas');
     }
     return user;
   }
 }
+
+/* 
+  __  ____ ____ _  _ 
+ / _\/ ___) ___) )( \
+/    \___ \___ ) \/ (
+\_/\_(____(____|____/
+*/

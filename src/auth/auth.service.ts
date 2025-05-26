@@ -11,10 +11,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, senha: string): Promise<any> {
+  async validateUser(email: string, password: string): Promise<any> {
     console.log(`Validando usuário com email: ${email}`);
     try {
-      const user = await this.usersService.findByEmail(email);
+      const user = await this.usersService.findByEmailForAuth(email); // Usar método específico para auth
 
       if (!user) {
         console.log('Usuário não encontrado.');
@@ -22,7 +22,7 @@ export class AuthService {
       }
 
       // Comparar a senha fornecida com o hash armazenado usando bcrypt
-      const isPasswordValid = await bcrypt.compare(senha, user.senha);
+      const isPasswordValid = await bcrypt.compare(password, user.senha);
       console.log(`Senha válida: ${isPasswordValid}`);
 
       if (isPasswordValid) {
@@ -40,7 +40,7 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     console.log(`Tentativa de login para o email: ${loginDto.email}`);
-    const user = await this.validateUser(loginDto.email, loginDto.senha);
+    const user = await this.validateUser(loginDto.email, loginDto.password); // Usar 'password' em vez de 'senha'
 
     if (!user) {
       console.log('Falha no login: Credenciais inválidas.');

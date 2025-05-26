@@ -7,7 +7,7 @@ export class LoginDto {
 
   @IsNotEmpty({ message: 'A senha é obrigatória' })
   @MinLength(6, { message: 'A senha deve ter pelo menos 6 caracteres' })
-  senha: string;
+  password: string; // Alterado de 'senha' para 'password'
 }
             
 /*             

@@ -73,6 +73,7 @@ import { AuditLog } from './audit/entities/audit-log.entity';
           SinaisVitais,
           AnotacaoMedica,
           AuditLog,
+          Exame,
         ],
         synchronize: configService.get<string>('NODE_ENV') !== 'production', // Apenas para desenvolvimento
         logging: configService.get<string>('NODE_ENV') === 'development',

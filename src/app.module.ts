@@ -18,8 +18,8 @@ import { AgendamentoModule } from './agendamentos/agendamento.module';
 import { ReportsModule } from './reports/reports.module';
 import { AuditModule } from './audit/audit.module';
 import { ProntuarioEletronicoModule } from './prontuario-eletronico/prontuario-eletronico.module';
-import { SeedModule } from './seed/seed.module'; // Adicionar import do SeedModule
-
+import { MedicoModule } from './medico/medico.module'; // Novo módulo médico
+import { SeedModule } from './seed/seed.module';
 
 // Entidades do banco de dados
 import { User } from './users/entities/user.entity';
@@ -28,10 +28,16 @@ import { Agendamento } from './agendamentos/entities/agendamento.entity';
 import { HistoricoClinico } from './prontuario-eletronico/entities/historico-clinico.entity';
 import { EvolucaoPaciente } from './prontuario-eletronico/entities/evolucao-paciente.entity';
 import { Exame } from './prontuario-eletronico/entities/exame.entity';
-
 import { SinaisVitais } from './prontuario-eletronico/entities/sinais-vitais.entity';
 import { AnotacaoMedica } from './prontuario-eletronico/entities/anotacao-medica.entity';
 import { AuditLog } from './audit/entities/audit-log.entity';
+
+// Novas entidades do módulo médico
+import { Atestado } from './medico/entities/atestado.entity';
+import { Prescricao } from './medico/entities/prescricao.entity';
+import { PrescricaoMedicamento } from './medico/entities/prescricao-medicamento.entity';
+import { Template } from './medico/entities/template.entity';
+import { FilaEspera } from './medico/entities/fila-espera.entity';
 
 @Module({
   imports: [
@@ -74,8 +80,14 @@ import { AuditLog } from './audit/entities/audit-log.entity';
           AnotacaoMedica,
           AuditLog,
           Exame,
+          // Novas entidades do módulo médico
+          Atestado,
+          Prescricao,
+          PrescricaoMedicamento,
+          Template,
+          FilaEspera,
         ],
-        synchronize: configService.get<string>('NODE_ENV') !== 'production', // Apenas para desenvolvimento
+        synchronize: configService.get<string>('NODE_ENV') !== 'production',
         logging: configService.get<string>('NODE_ENV') === 'development',
         autoLoadEntities: true,
       }),
@@ -88,9 +100,10 @@ import { AuditLog } from './audit/entities/audit-log.entity';
     PacienteModule,
     AgendamentoModule,
     ProntuarioEletronicoModule,
+    MedicoModule, // Adicionar o novo módulo médico
     ReportsModule,
     AuditModule,
-    SeedModule, // Adicionar SeedModule
+    SeedModule,
   ],
   
   providers: [

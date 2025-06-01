@@ -21,7 +21,7 @@ export class UsersController {
   }
 
   @Get()
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN,UserRole.RECEPCIONISTA)
   @Audit({ action: 'LIST', resource: 'User' })
   findAll(@Query('role') role?: UserRole) {
     if (role) {

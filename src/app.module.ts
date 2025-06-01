@@ -8,7 +8,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 // Guards e interceptors
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
-
+import { AdvancedLoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 // Importar todos os módulos da aplicação
 import { AuthModule } from './auth/auth.module';
@@ -80,7 +80,7 @@ import { FilaEspera } from './medico/entities/fila-espera.entity';
           AnotacaoMedica,
           AuditLog,
           Exame,
-          // Novas entidades do módulo médico
+          
           Atestado,
           Prescricao,
           PrescricaoMedicamento,
@@ -107,6 +107,12 @@ import { FilaEspera } from './medico/entities/fila-espera.entity';
   ],
   
   providers: [
+    // Configurar o LoggingInterceptor como interceptor global
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AdvancedLoggingInterceptor,
+    },
+    
     // Configurar o JwtAuthGuard como guard global
     {
       provide: APP_GUARD,
@@ -118,7 +124,6 @@ import { FilaEspera } from './medico/entities/fila-espera.entity';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
-
   ],
   
   controllers: [],
@@ -139,6 +144,7 @@ export class AppModule {
     });
     
     console.log('🌍 Ambiente:', this.configService.get<string>('NODE_ENV') || 'development');
+    console.log('📋 Sistema de logging de endpoints ativado');
   }
 }
 

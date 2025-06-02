@@ -22,39 +22,40 @@ export class Agendamento {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'date' })
-  data: Date;
+  // Usar string para data para compatibilidade com SQLite
+  @Column({ type: 'varchar', length: 10 })
+  data: string;
 
-  @Column({ type: 'time' })
+  @Column({ type: 'varchar', length: 8 })
   horario: string;
 
+  // Usar varchar ao invés de enum para compatibilidade com SQLite
   @Column({
     type: 'varchar',
-    length: 255,
-    enum: StatusAgendamento,
+    length: 20,
     default: StatusAgendamento.AGENDADO,
   })
   status: StatusAgendamento;
 
+  // Usar varchar ao invés de enum para compatibilidade com SQLite
   @Column({
     type: 'varchar',
-    length: 50,
-    enum: TipoAgendamento,
+    length: 20,
     default: TipoAgendamento.CONSULTA,
   })
   tipo: TipoAgendamento;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   observacoes: string;
 
-  @ManyToOne(() => Paciente)
+  @ManyToOne(() => Paciente, { eager: true })
   @JoinColumn({ name: 'paciente_id' })
   paciente: Paciente;
 
   @Column()
   paciente_id: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { eager: true })
   @JoinColumn({ name: 'medico_id' })
   medico: User;
 
@@ -67,8 +68,8 @@ export class Agendamento {
   @UpdateDateColumn()
   updated_at: Date;
 }
-            
-/*             
+
+/* 
   __  ____ ____ _  _ 
  / _\/ ___) ___) )( \
 /    \___ \___ ) \/ (

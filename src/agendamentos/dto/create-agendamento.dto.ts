@@ -1,4 +1,4 @@
-import { IsDate, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, IsIn } from 'class-validator';
 import { StatusAgendamento, TipoAgendamento } from '../entities/agendamento.entity';
 import { Type } from 'class-transformer';
 
@@ -13,11 +13,11 @@ export class CreateAgendamentoDto {
   horario: string;
 
   @IsOptional()
-  @IsEnum(StatusAgendamento, { message: 'Status inválido' })
+  @IsIn(Object.values(StatusAgendamento), { message: 'Status inválido' })
   status?: StatusAgendamento;
 
   @IsNotEmpty({ message: 'O tipo de agendamento é obrigatório' })
-  @IsEnum(TipoAgendamento, { message: 'Tipo de agendamento inválido' })
+  @IsIn(Object.values(TipoAgendamento), { message: 'Tipo de agendamento inválido' })
   tipo: TipoAgendamento;
 
   @IsOptional()

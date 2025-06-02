@@ -8,7 +8,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 // Guards e interceptors
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
-import { AdvancedLoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 // Importar todos os módulos da aplicação
 import { AuthModule } from './auth/auth.module';
@@ -110,7 +110,7 @@ import { FilaEspera } from './medico/entities/fila-espera.entity';
     // Configurar o LoggingInterceptor como interceptor global
     {
       provide: APP_INTERCEPTOR,
-      useClass: AdvancedLoggingInterceptor,
+      useClass: LoggingInterceptor,
     },
     
     // Configurar o JwtAuthGuard como guard global

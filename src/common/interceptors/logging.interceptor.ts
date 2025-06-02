@@ -11,8 +11,8 @@ import { Request, Response } from 'express';
 import { getLoggerConfig, LoggerConfig } from '../../config/logger.config';
 
 @Injectable()
-export class AdvancedLoggingInterceptor implements NestInterceptor {
-  private readonly logger = new Logger(AdvancedLoggingInterceptor.name);
+export class LoggingInterceptor implements NestInterceptor {
+  private readonly logger = new Logger(LoggingInterceptor.name);
   private readonly config: LoggerConfig;
 
   constructor() {

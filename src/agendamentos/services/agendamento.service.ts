@@ -14,7 +14,13 @@ export class AgendamentoService {
 
   // Criar novo agendamento
   async create(createAgendamentoDto: CreateAgendamentoDto): Promise<Agendamento> {
-    const agendamento = this.agendamentoRepository.create(createAgendamentoDto);
+    // Converter data para string no formato yyyy-MM-dd
+    const agendamentoData = {
+      ...createAgendamentoDto,
+      data: createAgendamentoDto.data.toISOString().split('T')[0],
+    };
+    
+    const agendamento = this.agendamentoRepository.create(agendamentoData);
     return await this.agendamentoRepository.save(agendamento);
   }
 
@@ -31,7 +37,9 @@ export class AgendamentoService {
     
     // Aplicar filtros quando fornecidos
     if (data) {
-      query.andWhere('agendamento.data = :data', { data });
+      // Converter data para string no formato yyyy-MM-dd para comparação
+      const dataString = data.toISOString().split('T')[0];
+      query.andWhere('agendamento.data = :data', { data: dataString });
     }
     
     if (medico_id) {
@@ -53,8 +61,7 @@ export class AgendamentoService {
 
   // Buscar agendamentos de hoje
   async findToday(): Promise<Agendamento[]> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = new Date().toISOString().split('T')[0];
     
     return await this.agendamentoRepository.createQueryBuilder('agendamento')
       .leftJoinAndSelect('agendamento.paciente', 'paciente')
@@ -66,10 +73,12 @@ export class AgendamentoService {
 
   // Buscar agendamentos por data
   async findByDate(data: Date): Promise<Agendamento[]> {
+    const dataString = data.toISOString().split('T')[0];
+    
     return await this.agendamentoRepository.createQueryBuilder('agendamento')
       .leftJoinAndSelect('agendamento.paciente', 'paciente')
       .leftJoinAndSelect('agendamento.medico', 'medico')
-      .where('agendamento.data = :data', { data })
+      .where('agendamento.data = :data', { data: dataString })
       .orderBy('agendamento.horario', 'ASC')
       .getMany();
   }
@@ -92,8 +101,14 @@ export class AgendamentoService {
   async update(id: number, updateAgendamentoDto: UpdateAgendamentoDto): Promise<Agendamento> {
     const agendamento = await this.findOne(id);
     
+    // Converter data para string se fornecida
+    const updateData = { ...updateAgendamentoDto };
+    if (updateData.data) {
+      updateData.data = updateData.data.toISOString().split('T')[0] as any;
+    }
+    
     // Atualiza os campos do agendamento com os valores do DTO
-    Object.assign(agendamento, updateAgendamentoDto);
+    Object.assign(agendamento, updateData);
     
     return await this.agendamentoRepository.save(agendamento);
   }

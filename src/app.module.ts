@@ -47,14 +47,14 @@ import { FilaEspera } from './medico/entities/fila-espera.entity';
       envFilePath: ['.env.local', '.env'],
       cache: true,
     }),
-    
+
     // Configuração do Passport
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    
+
     // Configuração do JWT
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET') || 'hemose-secret-key',
         signOptions: {
           expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '24h',
@@ -63,11 +63,11 @@ import { FilaEspera } from './medico/entities/fila-espera.entity';
       inject: [ConfigService],
       global: true,
     }),
-    
+
     // Configuração do banco de dados TypeORM
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         type: 'sqlite',
         database: configService.get<string>('DATABASE_PATH') || 'hemose.db',
         entities: [
@@ -80,7 +80,7 @@ import { FilaEspera } from './medico/entities/fila-espera.entity';
           AnotacaoMedica,
           AuditLog,
           Exame,
-          
+
           Atestado,
           Prescricao,
           PrescricaoMedicamento,
@@ -93,7 +93,7 @@ import { FilaEspera } from './medico/entities/fila-espera.entity';
       }),
       inject: [ConfigService],
     }),
-    
+
     // Módulos da aplicação
     AuthModule,
     UsersModule,
@@ -105,27 +105,27 @@ import { FilaEspera } from './medico/entities/fila-espera.entity';
     AuditModule,
     SeedModule,
   ],
-  
+
   providers: [
     // Configurar o LoggingInterceptor como interceptor global
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
     },
-    
+
     // Configurar o JwtAuthGuard como guard global
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
-    
+
     // Configurar o RolesGuard como guard global (depois do JWT)
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
   ],
-  
+
   controllers: [],
   exports: [],
 })
@@ -137,13 +137,16 @@ export class AppModule {
       database: this.configService.get<string>('DATABASE_PATH') || 'hemose.db',
       synchronize: this.configService.get<string>('NODE_ENV') !== 'production',
     });
-    
+
     console.log('🔐 Configuração JWT:', {
       expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') || '24h',
       hasSecret: !!this.configService.get<string>('JWT_SECRET'),
     });
-    
-    console.log('🌍 Ambiente:', this.configService.get<string>('NODE_ENV') || 'development');
+
+    console.log(
+      '🌍 Ambiente:',
+      this.configService.get<string>('NODE_ENV') || 'development',
+    );
     console.log('📋 Sistema de logging de endpoints ativado');
   }
 }

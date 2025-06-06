@@ -1,4 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import { Funcionario } from './funcionario.entity';
 import { Prescricao } from './prescricao.entity';
 
@@ -19,11 +28,11 @@ export class Medico {
   @Column({ length: 20, nullable: true })
   telefone: string;
 
-  @ManyToOne(() => Funcionario, funcionario => funcionario.medicos)
+  @ManyToOne(() => Funcionario, (funcionario) => funcionario.medicos)
   @JoinColumn({ name: 'funcionario_id' })
   funcionario: Funcionario;
 
-  @OneToMany(() => Prescricao, prescricao => prescricao.medico)
+  @OneToMany(() => Prescricao, (prescricao) => prescricao.medico)
   prescricoes: Prescricao[];
 
   @CreateDateColumn()

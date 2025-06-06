@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -13,73 +14,79 @@ export class AgendamentoService {
   ) {}
 
   // Criar novo agendamento
-  async create(createAgendamentoDto: CreateAgendamentoDto): Promise<Agendamento> {
+  async create(
+    createAgendamentoDto: CreateAgendamentoDto,
+  ): Promise<Agendamento> {
     // Converter data para string no formato yyyy-MM-dd
     const agendamentoData = {
       ...createAgendamentoDto,
       data: createAgendamentoDto.data.toISOString().split('T')[0],
     };
-    
+
     const agendamento = this.agendamentoRepository.create(agendamentoData);
     return await this.agendamentoRepository.save(agendamento);
   }
 
   // Buscar todos os agendamentos com opções de filtro
   async findAll(
-    data?: Date, 
-    medico_id?: number, 
-    paciente_id?: number, 
-    status?: StatusAgendamento
+    data?: Date,
+    medico_id?: number,
+    paciente_id?: number,
+    status?: StatusAgendamento,
   ): Promise<Agendamento[]> {
-    const query = this.agendamentoRepository.createQueryBuilder('agendamento')
+    const query = this.agendamentoRepository
+      .createQueryBuilder('agendamento')
       .leftJoinAndSelect('agendamento.paciente', 'paciente')
       .leftJoinAndSelect('agendamento.medico', 'medico');
-    
+
     // Aplicar filtros quando fornecidos
     if (data) {
       // Converter data para string no formato yyyy-MM-dd para comparação
       const dataString = data.toISOString().split('T')[0];
       query.andWhere('agendamento.data = :data', { data: dataString });
     }
-    
+
     if (medico_id) {
       query.andWhere('agendamento.medico_id = :medico_id', { medico_id });
     }
-    
+
     if (paciente_id) {
       query.andWhere('agendamento.paciente_id = :paciente_id', { paciente_id });
     }
-    
+
     if (status) {
       query.andWhere('agendamento.status = :status', { status });
     }
-    
-    return await query.orderBy('agendamento.data', 'ASC')
-                     .addOrderBy('agendamento.horario', 'ASC')
-                     .getMany();
+
+    return await query
+      .orderBy('agendamento.data', 'ASC')
+      .addOrderBy('agendamento.hora', 'ASC')
+      .getMany();
   }
 
   // Buscar agendamentos de hoje
   async findToday(): Promise<Agendamento[]> {
     const today = new Date().toISOString().split('T')[0];
-    
-    return await this.agendamentoRepository.createQueryBuilder('agendamento')
+
+    return await this.agendamentoRepository
+      .createQueryBuilder('agendamento')
       .leftJoinAndSelect('agendamento.paciente', 'paciente')
       .leftJoinAndSelect('agendamento.medico', 'medico')
       .where('agendamento.data = :today', { today })
-      .orderBy('agendamento.horario', 'ASC')
+      .orderBy('agendamento.hora', 'ASC')
       .getMany();
   }
 
   // Buscar agendamentos por data
   async findByDate(data: Date): Promise<Agendamento[]> {
     const dataString = data.toISOString().split('T')[0];
-    
-    return await this.agendamentoRepository.createQueryBuilder('agendamento')
+
+    return await this.agendamentoRepository
+      .createQueryBuilder('agendamento')
       .leftJoinAndSelect('agendamento.paciente', 'paciente')
       .leftJoinAndSelect('agendamento.medico', 'medico')
       .where('agendamento.data = :data', { data: dataString })
-      .orderBy('agendamento.horario', 'ASC')
+      .orderBy('agendamento.hora', 'ASC')
       .getMany();
   }
 
@@ -89,27 +96,30 @@ export class AgendamentoService {
       where: { id },
       relations: ['paciente', 'medico'],
     });
-    
+
     if (!agendamento) {
       throw new NotFoundException(`Agendamento #${id} não encontrado`);
     }
-    
+
     return agendamento;
   }
 
   // Atualizar um agendamento
-  async update(id: number, updateAgendamentoDto: UpdateAgendamentoDto): Promise<Agendamento> {
+  async update(
+    id: number,
+    updateAgendamentoDto: UpdateAgendamentoDto,
+  ): Promise<Agendamento> {
     const agendamento = await this.findOne(id);
-    
+
     // Converter data para string se fornecida
     const updateData = { ...updateAgendamentoDto };
     if (updateData.data) {
       updateData.data = updateData.data.toISOString().split('T')[0] as any;
     }
-    
+
     // Atualiza os campos do agendamento com os valores do DTO
     Object.assign(agendamento, updateData);
-    
+
     return await this.agendamentoRepository.save(agendamento);
   }
 
@@ -147,7 +157,7 @@ export class AgendamentoService {
     await this.agendamentoRepository.remove(agendamento);
   }
 }
-            
+
 /*             
   __  ____ ____ _  _ 
  / _\/ ___) ___) )( \

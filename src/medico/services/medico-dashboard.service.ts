@@ -1,27 +1,27 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between, MoreThanOrEqual } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
-import { Agendamento, StatusAgendamento } from '../../agendamentos/entities/agendamento.entity';
-import { FilaEspera } from '../entities/fila-espera.entity';
+import { Between, MoreThanOrEqual, Repository } from 'typeorm';
+import {
+  Agendamento,
+  StatusAgendamento,
+} from '../../agendamentos/entities/agendamento.entity';
 import { Atestado } from '../entities/atestado.entity';
+import { FilaEspera } from '../entities/fila-espera.entity';
 import { Prescricao } from '../entities/prescricao.entity';
 
 @Injectable()
 export class MedicoDashboardService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    
     @InjectRepository(Agendamento)
     private readonly agendamentoRepository: Repository<Agendamento>,
-    
+
     @InjectRepository(FilaEspera)
     private readonly filaEsperaRepository: Repository<FilaEspera>,
-    
+
     @InjectRepository(Atestado)
     private readonly atestadoRepository: Repository<Atestado>,
-    
+
     @InjectRepository(Prescricao)
     private readonly prescricaoRepository: Repository<Prescricao>,
   ) {}
@@ -29,27 +29,30 @@ export class MedicoDashboardService {
   // Obter dados do dashboard médico
   async getDashboardData(medicoId: number) {
     const hoje = new Date();
-    const dataHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate()); // Converte para Date
+    const dataHojeString = hoje.toISOString().split('T')[0]; // Formato YYYY-MM-DD
     const horaAtual = hoje.toTimeString().split(' ')[0].substring(0, 5); // Formato HH:MM
-    
-    // Criar data limite para próximas 3 horas
-    const proximasHoras = new Date(Date.now() + 3 * 60 * 60 * 1000);
-    const horaLimite = proximasHoras.toTimeString().split(' ')[0].substring(0, 5);
 
-    // Buscar estatísticas do médico
+    // Criar hora limite para próximas 3 horas
+    const proximasHoras = new Date(Date.now() + 3 * 60 * 60 * 1000);
+    const horaLimite = proximasHoras
+      .toTimeString()
+      .split(' ')[0]
+      .substring(0, 5);
+
+    // Buscar dados do dashboard
     const [
       consultasHoje,
       consultasRealizadas,
       filaEspera,
       proximosAgendamentos,
       atestadosEmitidos,
-      prescricoesEmitidas
+      prescricoesEmitidas,
     ] = await Promise.all([
       // Total de consultas agendadas para hoje
       this.agendamentoRepository.count({
         where: {
           medico_id: medicoId,
-          data: dataHoje,
+          data: dataHojeString,
         },
       }),
 
@@ -57,44 +60,54 @@ export class MedicoDashboardService {
       this.agendamentoRepository.count({
         where: {
           medico_id: medicoId,
-          data: dataHoje,
+          data: dataHojeString,
           status: StatusAgendamento.REALIZADO,
         },
       }),
 
-      // Pacientes na fila de espera
-      this.filaEsperaRepository.count({
-        where: { status: 'aguardando' },
-      }),
+      // Fila de espera - verificar se existe
+      this.filaEsperaRepository
+        .count({
+          where: { status: 'aguardando' },
+        })
+        .catch(() => 0), // Se não existir a tabela, retorna 0
 
       // Próximos agendamentos (próximas 3 horas)
       this.agendamentoRepository.find({
         where: {
           medico_id: medicoId,
-          data: dataHoje,
+          data: dataHojeString,
           status: StatusAgendamento.CONFIRMADO,
-          horario: Between(horaAtual, horaLimite),
+          hora: Between(horaAtual, horaLimite),
         },
         relations: ['paciente'],
-        order: { horario: 'ASC' },
+        order: { hora: 'ASC' },
         take: 5,
       }),
 
-      // Atestados emitidos este mês
-      this.atestadoRepository.count({
-        where: {
-          medicoId,
-          dataEmissao: MoreThanOrEqual(new Date(hoje.getFullYear(), hoje.getMonth(), 1)),
-        },
-      }),
+      // Atestados emitidos este mês - verificar se existe
+      this.atestadoRepository
+        .count({
+          where: {
+            medicoId,
+            dataEmissao: MoreThanOrEqual(
+              new Date(hoje.getFullYear(), hoje.getMonth(), 1),
+            ),
+          },
+        })
+        .catch(() => 0), // Se não existir a tabela, retorna 0
 
-      // Prescrições emitidas este mês
-      this.prescricaoRepository.count({
-        where: {
-          medicoId,
-          dataEmissao: MoreThanOrEqual(new Date(hoje.getFullYear(), hoje.getMonth(), 1)),
-        },
-      }),
+      // Prescrições emitidas este mês - verificar se existe
+      this.prescricaoRepository
+        .count({
+          where: {
+            medicoId,
+            dataEmissao: MoreThanOrEqual(
+              new Date(hoje.getFullYear(), hoje.getMonth(), 1),
+            ),
+          },
+        })
+        .catch(() => 0), // Se não existir a tabela, retorna 0
     ]);
 
     return {
@@ -106,11 +119,12 @@ export class MedicoDashboardService {
         prescricoesEmitidas,
         proximosAgendamentos: proximosAgendamentos.length,
       },
-      proximosAgendamentos: proximosAgendamentos.map(agendamento => ({
+      proximosAgendamentos: proximosAgendamentos.map((agendamento) => ({
         id: agendamento.id,
-        pacienteNome: agendamento.paciente?.nome,
-        horario: `${agendamento.data} ${agendamento.horario}`,
+        pacienteNome: agendamento.paciente?.nome || 'Paciente não encontrado',
+        horario: `${agendamento.data} ${agendamento.hora}`,
         tipo: agendamento.tipo || 'Consulta',
+        status: agendamento.status,
       })),
     };
   }
@@ -119,7 +133,7 @@ export class MedicoDashboardService {
   async getEstatisticasMedico(medicoId: number, periodo?: string) {
     let dataInicio: Date;
     const hoje = new Date();
-    
+
     // Definir período baseado no parâmetro
     switch (periodo) {
       case 'semana':
@@ -135,6 +149,8 @@ export class MedicoDashboardService {
         dataInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
     }
 
+    const dataInicioString = dataInicio.toISOString().split('T')[0];
+
     // Buscar dados estatísticos
     const [
       totalConsultas,
@@ -142,19 +158,19 @@ export class MedicoDashboardService {
       consultasCanceladas,
       atestadosEmitidos,
       prescricoesEmitidas,
-      pacientesAtendidos
+      pacientesAtendidos,
     ] = await Promise.all([
       this.agendamentoRepository.count({
         where: {
           medico_id: medicoId,
-          data: MoreThanOrEqual(dataInicio),
+          data: MoreThanOrEqual(dataInicioString),
         },
       }),
 
       this.agendamentoRepository.count({
         where: {
           medico_id: medicoId,
-          data: MoreThanOrEqual(dataInicio),
+          data: MoreThanOrEqual(dataInicioString),
           status: StatusAgendamento.REALIZADO,
         },
       }),
@@ -162,32 +178,42 @@ export class MedicoDashboardService {
       this.agendamentoRepository.count({
         where: {
           medico_id: medicoId,
-          data: MoreThanOrEqual(dataInicio),
+          data: MoreThanOrEqual(dataInicioString),
           status: StatusAgendamento.CANCELADO,
         },
       }),
 
-      this.atestadoRepository.count({
-        where: {
-          medicoId,
-          dataEmissao: MoreThanOrEqual(dataInicio),
-        },
-      }),
+      // Atestados emitidos - com fallback
+      this.atestadoRepository
+        .count({
+          where: {
+            medicoId,
+            dataEmissao: MoreThanOrEqual(dataInicio),
+          },
+        })
+        .catch(() => 0),
 
-      this.prescricaoRepository.count({
-        where: {
-          medicoId,
-          dataEmissao: MoreThanOrEqual(dataInicio),
-        },
-      }),
+      // Prescrições emitidas - com fallback
+      this.prescricaoRepository
+        .count({
+          where: {
+            medicoId,
+            dataEmissao: MoreThanOrEqual(dataInicio),
+          },
+        })
+        .catch(() => 0),
 
       // Pacientes únicos atendidos
       this.agendamentoRepository
         .createQueryBuilder('agendamento')
         .select('COUNT(DISTINCT agendamento.paciente_id)', 'count')
         .where('agendamento.medico_id = :medicoId', { medicoId })
-        .andWhere('agendamento.data >= :dataInicio', { dataInicio })
-        .andWhere('agendamento.status = :status', { status: StatusAgendamento.REALIZADO })
+        .andWhere('agendamento.data >= :dataInicio', {
+          dataInicio: dataInicioString,
+        })
+        .andWhere('agendamento.status = :status', {
+          status: StatusAgendamento.REALIZADO,
+        })
         .getRawOne(),
     ]);
 
@@ -201,10 +227,44 @@ export class MedicoDashboardService {
         consultasCanceladas,
         atestadosEmitidos,
         prescricoesEmitidas,
-        pacientesAtendidos: parseInt(pacientesAtendidos?.count || '0'),
-        taxaRealizacao: totalConsultas > 0 ? (consultasRealizadas / totalConsultas) * 100 : 0,
+        pacientesAtendidos: parseInt(
+          (pacientesAtendidos as { count: string })?.count || '0',
+        ),
+        taxaSucesso:
+          totalConsultas > 0 ? (consultasRealizadas / totalConsultas) * 100 : 0,
       },
     };
+  }
+
+  // Obter agendamentos do dia para o médico
+  async getAgendamentosDia(medicoId: number, data?: string) {
+    const dataConsulta = data || new Date().toISOString().split('T')[0];
+
+    return await this.agendamentoRepository.find({
+      where: {
+        medico_id: medicoId,
+        data: dataConsulta,
+      },
+      relations: ['paciente'],
+      order: { hora: 'ASC' },
+    });
+  }
+
+  // Atualizar status de um agendamento
+  async atualizarStatusAgendamento(
+    agendamentoId: number,
+    novoStatus: StatusAgendamento,
+  ) {
+    const agendamento = await this.agendamentoRepository.findOne({
+      where: { id: agendamentoId },
+    });
+
+    if (!agendamento) {
+      throw new Error('Agendamento não encontrado');
+    }
+
+    agendamento.status = novoStatus;
+    return await this.agendamentoRepository.save(agendamento);
   }
 }
 

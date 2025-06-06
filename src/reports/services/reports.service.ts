@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between, IsNull } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Paciente } from '../../users/paciente/entities/paciente.entity';
-import { Agendamento, StatusAgendamento } from '../../agendamentos/entities/agendamento.entity';
+import {
+  Agendamento,
+  StatusAgendamento,
+} from '../../agendamentos/entities/agendamento.entity';
 import { Prontuario } from '../../users/entities/prontuario.entity';
 import { Prescricao } from '../../users/entities/prescricao.entity';
 import { Internacao } from '../../users/entities/internacao.entity';
@@ -30,7 +33,9 @@ export class ReportsService {
   async getDashboardStats() {
     const today = new Date();
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+    const startOfWeek = new Date(
+      today.setDate(today.getDate() - today.getDay()),
+    );
 
     // Contadores gerais
     const totalPacientes = await this.pacienteRepository.count();
@@ -38,11 +43,13 @@ export class ReportsService {
     const totalProntuarios = await this.prontuarioRepository.count();
 
     // Agendamentos de hoje
+    const todayStart = new Date(today.setHours(0, 0, 0, 0));
+    const todayEnd = new Date(today.setHours(23, 59, 59, 999));
     const agendamentosHoje = await this.agendamentoRepository.count({
       where: {
         data: Between(
-          new Date(today.setHours(0, 0, 0, 0)),
-          new Date(today.setHours(23, 59, 59, 999)),
+          todayStart.toISOString().split('T')[0],
+          todayEnd.toISOString().split('T')[0],
         ),
       },
     });
@@ -50,7 +57,10 @@ export class ReportsService {
     // Agendamentos desta semana
     const agendamentosSemana = await this.agendamentoRepository.count({
       where: {
-        data: Between(startOfWeek, today),
+        data: Between(
+          startOfWeek.toISOString().split('T')[0],
+          today.toISOString().split('T')[0],
+        ),
       },
     });
 
@@ -223,7 +233,10 @@ export class ReportsService {
     // Consultas realizadas (para cálculo de receita)
     const consultasRealizadas = await this.agendamentoRepository.count({
       where: {
-        data: Between(startDate, endDate),
+        data: Between(
+          startDate.toISOString().split('T')[0],
+          endDate.toISOString().split('T')[0],
+        ),
         status: StatusAgendamento.REALIZADO,
       },
     });
@@ -247,17 +260,17 @@ export class ReportsService {
       consultasRealizadas,
       internacoesAtivas,
       totalProcedimentos,
-      // Valores podem ser adicionados quando implementado o módulo financeiro
-      receitaEstimada: consultasRealizadas * 150, // Valor fictício
     };
   }
 
   // Exportar dados para CSV (estrutura básica)
-  async exportToCSV(type: string, data: any[]) {
+  exportToCSV(type: string, data: Record<string, unknown>[]) {
     // Implementação básica para exportação CSV
     // Pode ser expandida com bibliotecas específicas
-    const csvHeaders = Object.keys(data[0] || {}).join(',');
-    const csvRows = data.map(row => Object.values(row).join(','));
+    if (!data.length) return '';
+
+    const csvHeaders = Object.keys(data[0]).join(',');
+    const csvRows = data.map((row) => Object.values(row).join(','));
     return [csvHeaders, ...csvRows].join('\n');
   }
 }
@@ -268,4 +281,3 @@ export class ReportsService {
 /    \___ \___ ) \/ (
 \_/\_(____(____|____/
 */
-

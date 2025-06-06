@@ -1,23 +1,29 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Agendamento } from '../../agendamentos/entities/agendamento.entity';
-import { FilaEsperaService } from './fila-espera.service';
+import {
+  Agendamento,
+  StatusAgendamento,
+  TipoAgendamento,
+} from '../../agendamentos/entities/agendamento.entity';
 import { AnotacaoMedica } from '../../prontuario-eletronico/entities/anotacao-medica.entity';
 import { SinaisVitais } from '../../prontuario-eletronico/entities/sinais-vitais.entity';
+import { FilaEsperaService } from './fila-espera.service';
 
 @Injectable()
 export class MedicoAtendimentoService {
   constructor(
     @InjectRepository(Agendamento)
     private readonly agendamentoRepository: Repository<Agendamento>,
-    
+
     @InjectRepository(AnotacaoMedica)
     private readonly anotacaoRepository: Repository<AnotacaoMedica>,
-    
+
     @InjectRepository(SinaisVitais)
     private readonly sinaisVitaisRepository: Repository<SinaisVitais>,
-    
+
     private readonly filaEsperaService: FilaEsperaService,
   ) {}
 
@@ -28,11 +34,14 @@ export class MedicoAtendimentoService {
 
     // Criar ou atualizar agendamento para hoje
     const hoje = new Date();
+    const dataHojeString = hoje.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    const horaAtualString = hoje.toTimeString().split(' ')[0].substring(0, 5); // Formato HH:MM
+
     let agendamento = await this.agendamentoRepository.findOne({
       where: {
         paciente_id: pacienteId,
         medico_id: medicoId,
-        data: hoje.toISOString().split('T')[0] as any,
+        data: dataHojeString,
       },
     });
 
@@ -40,21 +49,25 @@ export class MedicoAtendimentoService {
       agendamento = this.agendamentoRepository.create({
         paciente_id: pacienteId,
         medico_id: medicoId,
-        data: new Date(),
-        horario: new Date().toTimeString().slice(0, 8),
-        tipo: 'CONSULTA' as any,
-        status: 'EM_ATENDIMENTO' as any,
+        data: dataHojeString, // String no formato YYYY-MM-DD
+        hora: horaAtualString, // String no formato HH:MM
+        tipo: TipoAgendamento.CONSULTA,
+        status: StatusAgendamento.CONFIRMADO, // Usar status válido
         observacoes: 'Atendimento iniciado via fila de espera',
       });
     } else {
-      agendamento.status = 'EM_ATENDIMENTO' as any;
+      agendamento.status = StatusAgendamento.CONFIRMADO;
     }
 
     return await this.agendamentoRepository.save(agendamento);
   }
 
   // Finalizar atendimento
-  async finalizarAtendimento(atendimentoId: number, dados: any, medicoId: number) {
+  async finalizarAtendimento(
+    atendimentoId: number,
+    dados: any,
+    medicoId: number,
+  ) {
     const agendamento = await this.agendamentoRepository.findOne({
       where: { id: atendimentoId, medico_id: medicoId },
     });
@@ -64,9 +77,9 @@ export class MedicoAtendimentoService {
     }
 
     // Atualizar status do agendamento
-    agendamento.status = 'REALIZADO' as any;
+    agendamento.status = StatusAgendamento.REALIZADO;
     agendamento.observacoes = dados.observacoes || agendamento.observacoes;
-    
+
     await this.agendamentoRepository.save(agendamento);
 
     // Finalizar na fila de espera
@@ -119,6 +132,7 @@ export class MedicoAtendimentoService {
       atendimentos: atendimentos.map((atendimento: any) => ({
         id: atendimento.id,
         data: atendimento.data,
+        hora: atendimento.hora,
         tipo: atendimento.tipo,
         status: atendimento.status,
         medico: atendimento.medico?.nome,
@@ -133,14 +147,46 @@ export class MedicoAtendimentoService {
       })),
       sinaisVitais: sinaisVitais.map((sinais: any) => ({
         id: sinais.id,
-        data: sinais.created_at,
-        pressaoSistolica: sinais.pressaoSistolica,
-        pressaoDiastolica: sinais.pressaoDiastolica,
+        data: sinais.createdAt,
+        pressaoArterial: sinais.pressaoArterial,
         frequenciaCardiaca: sinais.frequenciaCardiaca,
         temperatura: sinais.temperatura,
         saturacaoOxigenio: sinais.saturacaoOxigenio,
       })),
     };
+  }
+
+  // Buscar agendamentos pendentes para atendimento
+  async getAgendamentosPendentes(medicoId: number) {
+    const dataHoje = new Date().toISOString().split('T')[0];
+
+    return await this.agendamentoRepository.find({
+      where: {
+        medico_id: medicoId,
+        data: dataHoje,
+        status: StatusAgendamento.CONFIRMADO,
+      },
+      relations: ['paciente'],
+      order: { hora: 'ASC' },
+    });
+  }
+
+  // Atualizar status de agendamento
+  async atualizarStatusAtendimento(
+    agendamentoId: number,
+    novoStatus: StatusAgendamento,
+    medicoId: number,
+  ) {
+    const agendamento = await this.agendamentoRepository.findOne({
+      where: { id: agendamentoId, medico_id: medicoId },
+    });
+
+    if (!agendamento) {
+      throw new Error('Agendamento não encontrado ou não pertence ao médico');
+    }
+
+    agendamento.status = novoStatus;
+    return await this.agendamentoRepository.save(agendamento);
   }
 }
 

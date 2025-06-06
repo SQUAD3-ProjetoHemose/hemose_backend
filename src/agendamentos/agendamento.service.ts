@@ -7,8 +7,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
-import { Paciente } from '../../users/paciente/entities/paciente.entity';
+
+import { User } from '../../src/users/entities/user.entity';
+import { Paciente } from '../users/paciente/entities/paciente.entity';
 
 export enum StatusAgendamento {
   AGENDADO = 'agendado',

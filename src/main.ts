@@ -13,12 +13,7 @@ import { ConfigService } from '@nestjs/config';
 async function bootstrap() {
   try {
     // Criar aplicação com configurações otimizadas para produção
-    const app = await NestFactory.create(AppModule, {
-      logger:
-        process.env.NODE_ENV === 'production'
-          ? ['error', 'warn']
-          : ['error', 'warn', 'log', 'debug'],
-    });
+    const app = await NestFactory.create(AppModule);
 
     const configService = app.get(ConfigService);
 

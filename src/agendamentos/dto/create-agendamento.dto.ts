@@ -1,5 +1,17 @@
-import { IsDate, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, IsIn } from 'class-validator';
-import { StatusAgendamento, TipoAgendamento } from '../entities/agendamento.entity';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {
+  IsDate,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsIn,
+} from 'class-validator';
+import {
+  StatusAgendamento,
+  TipoAgendamento,
+} from '../entities/agendamento.entity';
 import { Type } from 'class-transformer';
 
 export class CreateAgendamentoDto {
@@ -17,7 +29,9 @@ export class CreateAgendamentoDto {
   status?: StatusAgendamento;
 
   @IsNotEmpty({ message: 'O tipo de agendamento é obrigatório' })
-  @IsIn(Object.values(TipoAgendamento), { message: 'Tipo de agendamento inválido' })
+  @IsIn(Object.values(TipoAgendamento), {
+    message: 'Tipo de agendamento inválido',
+  })
   tipo: TipoAgendamento;
 
   @IsOptional()
@@ -32,7 +46,7 @@ export class CreateAgendamentoDto {
   @IsInt({ message: 'ID do médico inválido' })
   medico_id: number;
 }
-            
+
 /*             
   __  ____ ____ _  _ 
  / _\/ ___) ___) )( \

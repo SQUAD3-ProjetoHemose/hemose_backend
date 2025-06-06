@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  ParseIntPipe,
+  Logger,
+} from '@nestjs/common';
 import { AgendamentoService } from '../services/agendamento.service';
 import { CreateAgendamentoDto } from '../dto/create-agendamento.dto';
 import { UpdateAgendamentoDto } from '../dto/update-agendamento.dto';
@@ -23,14 +34,21 @@ export class AgendamentoController {
     @Query('paciente_id') paciente_id?: string,
     @Query('status') status?: StatusAgendamento,
   ) {
-    this.logger.log(`Buscando agendamentos com filtros: data=${data}, medico_id=${medico_id}, paciente_id=${paciente_id}, status=${status}`);
-    
+    this.logger.log(
+      `Buscando agendamentos com filtros: data=${data}, medico_id=${medico_id}, paciente_id=${paciente_id}, status=${status}`,
+    );
+
     // Converter string de data para objeto Date se fornecida
     const dataObj = data ? new Date(data) : undefined;
     const medicoIdNum = medico_id ? parseInt(medico_id, 10) : undefined;
     const pacienteIdNum = paciente_id ? parseInt(paciente_id, 10) : undefined;
-    
-    return this.agendamentoService.findAll(dataObj, medicoIdNum, pacienteIdNum, status);
+
+    return this.agendamentoService.findAll(
+      dataObj,
+      medicoIdNum,
+      pacienteIdNum,
+      status,
+    );
   }
 
   @Get('today')
@@ -91,7 +109,7 @@ export class AgendamentoController {
     return this.agendamentoService.remove(id);
   }
 }
-            
+
 /*             
   __  ____ ____ _  _ 
  / _\/ ___) ___) )( \

@@ -16,7 +16,6 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
     const configService = app.get(ConfigService);
-
     // Configurar CORS com origens específicas e seguras
     const allowedOrigins = [
       'https://hemose.vercel.app',
@@ -32,7 +31,13 @@ async function bootstrap() {
         // Permitir requisições sem origin (ex: mobile apps, Postman)
         if (!origin) return callback(null, true);
 
+        // Verificar se está na lista de origens permitidas
         if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+
+        // Permitir qualquer domínio que termine com .vercel.app
+        if (origin.endsWith('.vercel.app')) {
           return callback(null, true);
         }
 

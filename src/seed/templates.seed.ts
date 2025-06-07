@@ -33,7 +33,7 @@ Este atestado é válido para fins ocupacionais.
 _________________________________
 {{nomeMedico}}
 {{especialidade}}
-CRM: {{crm}}`,
+Registro Profissional: {{registroProfissional}}`,
         descricao: 'Template padrão para atestado de saúde ocupacional',
         padrao: true,
         ativo: true,
@@ -53,7 +53,7 @@ Tempo de permanência: {{tempoAtendimento}}
 _________________________________
 {{nomeMedico}}
 {{especialidade}}
-CRM: {{crm}}`,
+Registro Profissional: {{registroProfissional}}`,
         descricao: 'Template para atestado de comparecimento médico',
         padrao: true,
         ativo: true,
@@ -75,7 +75,7 @@ Durante este período, o(a) paciente deverá evitar atividades que possam agrava
 _________________________________
 {{nomeMedico}}
 {{especialidade}}
-CRM: {{crm}}`,
+Registro Profissional: {{registroProfissional}}`,
         descricao: 'Template para atestado de repouso médico',
         padrao: true,
         ativo: true,
@@ -109,7 +109,7 @@ ORIENTAÇÕES GERAIS:
 _________________________________
 {{nomeMedico}}
 {{especialidade}}
-CRM: {{crm}}`,
+Registro Profissional: {{registroProfissional}}`,
         descricao: 'Template básico para prescrição de medicamentos',
         padrao: true,
         ativo: true,
@@ -144,7 +144,7 @@ RECOMENDAÇÕES:
 _________________________________
 {{nomeMedico}}
 {{especialidade}}
-CRM: {{crm}}`,
+Registro Profissional: {{registroProfissional}}`,
         descricao: 'Template básico para laudo de exame',
         padrao: true,
         ativo: true,
@@ -180,7 +180,7 @@ Solicito avaliação especializada e conduta adequada.
 _________________________________
 {{nomeMedico}}
 {{especialidade}}
-CRM: {{crm}}`,
+Registro Profissional: {{registroProfissional}}`,
         descricao: 'Template para encaminhamento a especialista',
         padrao: true,
         ativo: true,

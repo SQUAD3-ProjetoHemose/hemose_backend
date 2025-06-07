@@ -23,7 +23,6 @@ import { SinaisVitais } from '../prontuario-eletronico/entities/sinais-vitais.en
 import { AnotacaoMedica } from '../prontuario-eletronico/entities/anotacao-medica.entity';
 import { AuditLog } from '../audit/entities/audit-log.entity';
 
-
 // Controladores do módulo médico
 import { MedicoDashboardController } from './controllers/medico-dashboard.controller';
 import { MedicoAtendimentoController } from './controllers/medico-atendimento.controller';
@@ -44,29 +43,29 @@ import { FilaEsperaService } from './services/fila-espera.service';
     // Registrar as entidades específicas do módulo médico incluindo Agendamento
     TypeOrmModule.forFeature([
       User,
-      Agendamento, 
+      Agendamento,
       Atestado,
       Prescricao,
-      PrescricaoMedicamento, 
+      PrescricaoMedicamento,
       Template,
       FilaEspera,
-      Paciente, 
+      Paciente,
       HistoricoClinico,
       EvolucaoPaciente,
       Exame,
       SinaisVitais,
       AnotacaoMedica,
-      AuditLog, 
+      AuditLog,
       // Outras entidades do módulo médico podem ser adicionadas aqui
     ]),
-    
+
     // Importar módulos existentes para reutilização
     PacienteModule,
     ProntuarioEletronicoModule,
     AgendamentoModule, // Manter para reutilizar serviços se necessário
     AuditModule,
   ],
-  
+
   controllers: [
     MedicoDashboardController,
     MedicoAtendimentoController,
@@ -74,7 +73,7 @@ import { FilaEsperaService } from './services/fila-espera.service';
     MedicoPrescricaoController,
     MedicoTemplateController,
   ],
-  
+
   providers: [
     MedicoDashboardService,
     MedicoAtendimentoService,
@@ -83,7 +82,7 @@ import { FilaEsperaService } from './services/fila-espera.service';
     MedicoTemplateService,
     FilaEsperaService,
   ],
-  
+
   exports: [
     MedicoDashboardService,
     MedicoAtendimentoService,

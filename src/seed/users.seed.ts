@@ -35,14 +35,13 @@ export class UsersSeedService implements OnApplicationBootstrap {
       tipo: UserRole.ADMIN,
     });
 
-    // Médicos com especialidades variadas
     await this.createUserIfNotExists({
       nome: 'Dr. João Silva',
       email: 'joao.silva@hemose.com',
       senha: 'medico123',
       tipo: UserRole.MEDICO,
       especialidade: 'Hematologia',
-      crm: '12345-SP',
+      registroProfissional: '12345-SP',
     });
 
     await this.createUserIfNotExists({
@@ -51,7 +50,7 @@ export class UsersSeedService implements OnApplicationBootstrap {
       senha: 'medico123',
       tipo: UserRole.MEDICO,
       especialidade: 'Oncologia',
-      crm: '67890-SP',
+      registroProfissional: '67890-SP',
     });
 
     await this.createUserIfNotExists({
@@ -60,7 +59,7 @@ export class UsersSeedService implements OnApplicationBootstrap {
       senha: 'medico123',
       tipo: UserRole.MEDICO,
       especialidade: 'Clínica Geral',
-      crm: '11111-RJ',
+      registroProfissional: '11111-RJ',
     });
 
     await this.createUserIfNotExists({
@@ -69,7 +68,7 @@ export class UsersSeedService implements OnApplicationBootstrap {
       senha: 'medico123',
       tipo: UserRole.MEDICO,
       especialidade: 'Hemoterapia',
-      crm: '22222-MG',
+      registroProfissional: '22222-MG',
     });
 
     // Enfermeiras com COREN
@@ -78,7 +77,7 @@ export class UsersSeedService implements OnApplicationBootstrap {
       email: 'maria.enfermeira@hemose.com',
       senha: 'enfermeira123',
       tipo: UserRole.ENFERMEIRA,
-      coren: '123456-SP',
+      registroProfissional: '123456-SP',
     });
 
     await this.createUserIfNotExists({
@@ -86,7 +85,7 @@ export class UsersSeedService implements OnApplicationBootstrap {
       email: 'fernanda.costa@hemose.com',
       senha: 'enfermeira123',
       tipo: UserRole.ENFERMEIRA,
-      coren: '789012-SP',
+      registroProfissional: '789012-SP',
     });
 
     await this.createUserIfNotExists({
@@ -94,7 +93,7 @@ export class UsersSeedService implements OnApplicationBootstrap {
       email: 'juliana.lima@hemose.com',
       senha: 'enfermeira123',
       tipo: UserRole.ENFERMEIRA,
-      coren: '345678-RJ',
+      registroProfissional: '345678-RJ',
     });
 
     // Recepcionistas
@@ -124,8 +123,7 @@ export class UsersSeedService implements OnApplicationBootstrap {
     senha: string;
     tipo: UserRole;
     especialidade?: string;
-    crm?: string;
-    coren?: string;
+    registroProfissional?: string;
   }): Promise<void> {
     try {
       // Verificar se o usuário já existe
@@ -145,8 +143,7 @@ export class UsersSeedService implements OnApplicationBootstrap {
           tipo: userData.tipo,
           ativo: true,
           especialidade: userData.especialidade,
-          crm: userData.crm,
-          coren: userData.coren,
+          registroProfissional: userData.registroProfissional,
         });
 
         await this.usersRepository.save(newUser);

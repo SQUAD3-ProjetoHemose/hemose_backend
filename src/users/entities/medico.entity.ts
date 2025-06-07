@@ -1,12 +1,12 @@
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Funcionario } from './funcionario.entity';
 import { Prescricao } from './prescricao.entity';
@@ -20,7 +20,7 @@ export class Medico {
   nome: string;
 
   @Column({ length: 20, unique: true })
-  crm: string;
+  registroProfissional: string;
 
   @Column({ length: 100 })
   especialidade: string;

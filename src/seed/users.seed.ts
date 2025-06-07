@@ -1,9 +1,9 @@
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { UserRole } from '../users/enums/user-role.enum';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersSeedService implements OnApplicationBootstrap {
@@ -25,11 +25,11 @@ export class UsersSeedService implements OnApplicationBootstrap {
    * Cria os usuários padrão se eles não existirem
    */
   async seed() {
-    this.logger.log('Verificando usuários padrão...');
+    this.logger.log('🔄 Verificando e criando usuários padrão...');
 
-    // Verifica e cria cada tipo de usuário padrão
+    // Administradores do sistema
     await this.createUserIfNotExists({
-      nome: 'Administrador',
+      nome: 'Administrador do Sistema',
       email: 'admin@hemose.com',
       senha: 'admin123',
       tipo: UserRole.ADMIN,
@@ -37,26 +37,81 @@ export class UsersSeedService implements OnApplicationBootstrap {
 
     await this.createUserIfNotExists({
       nome: 'Dr. João Silva',
-      email: 'medico@hemose.com',
+      email: 'joao.silva@hemose.com',
       senha: 'medico123',
       tipo: UserRole.MEDICO,
+      especialidade: 'Hematologia',
+      registroProfissional: '12345-SP',
     });
 
+    await this.createUserIfNotExists({
+      nome: 'Dra. Maria Santos',
+      email: 'maria.santos@hemose.com',
+      senha: 'medico123',
+      tipo: UserRole.MEDICO,
+      especialidade: 'Oncologia',
+      registroProfissional: '67890-SP',
+    });
+
+    await this.createUserIfNotExists({
+      nome: 'Dr. Carlos Oliveira',
+      email: 'carlos.oliveira@hemose.com',
+      senha: 'medico123',
+      tipo: UserRole.MEDICO,
+      especialidade: 'Clínica Geral',
+      registroProfissional: '11111-RJ',
+    });
+
+    await this.createUserIfNotExists({
+      nome: 'Dra. Ana Rodrigues',
+      email: 'ana.rodrigues@hemose.com',
+      senha: 'medico123',
+      tipo: UserRole.MEDICO,
+      especialidade: 'Hemoterapia',
+      registroProfissional: '22222-MG',
+    });
+
+    // Enfermeiras com COREN
     await this.createUserIfNotExists({
       nome: 'Maria Enfermeira',
-      email: 'enfermeira@hemose.com',
+      email: 'maria.enfermeira@hemose.com',
       senha: 'enfermeira123',
       tipo: UserRole.ENFERMEIRA,
+      registroProfissional: '123456-SP',
     });
 
     await this.createUserIfNotExists({
+      nome: 'Fernanda Costa',
+      email: 'fernanda.costa@hemose.com',
+      senha: 'enfermeira123',
+      tipo: UserRole.ENFERMEIRA,
+      registroProfissional: '789012-SP',
+    });
+
+    await this.createUserIfNotExists({
+      nome: 'Juliana Lima',
+      email: 'juliana.lima@hemose.com',
+      senha: 'enfermeira123',
+      tipo: UserRole.ENFERMEIRA,
+      registroProfissional: '345678-RJ',
+    });
+
+    // Recepcionistas
+    await this.createUserIfNotExists({
       nome: 'Ana Recepcionista',
-      email: 'recepcionista@hemose.com',
+      email: 'ana.recepcao@hemose.com',
       senha: 'recepcionista123',
       tipo: UserRole.RECEPCIONISTA,
     });
 
-    this.logger.log('Verificação de usuários padrão concluída!');
+    await this.createUserIfNotExists({
+      nome: 'Carlos Atendimento',
+      email: 'carlos.atendimento@hemose.com',
+      senha: 'recepcionista123',
+      tipo: UserRole.RECEPCIONISTA,
+    });
+
+    this.logger.log('✅ Verificação de usuários padrão concluída!');
   }
 
   /**
@@ -67,9 +122,11 @@ export class UsersSeedService implements OnApplicationBootstrap {
     email: string;
     senha: string;
     tipo: UserRole;
+    especialidade?: string;
+    registroProfissional?: string;
   }): Promise<void> {
     try {
-      // Verifica se o usuário já existe
+      // Verificar se o usuário já existe
       const existingUser = await this.usersRepository.findOne({
         where: { email: userData.email },
       });
@@ -77,27 +134,51 @@ export class UsersSeedService implements OnApplicationBootstrap {
       if (!existingUser) {
         // Hash da senha antes de salvar
         const hashedPassword = await bcrypt.hash(userData.senha, 10);
-        
-        // Cria o usuário
+
+        // Criar o usuário com dados específicos
         const newUser = this.usersRepository.create({
           nome: userData.nome,
           email: userData.email,
-          senha: hashedPassword, // Senha já com hash
+          senha: hashedPassword,
           tipo: userData.tipo,
           ativo: true,
+          especialidade: userData.especialidade,
+          registroProfissional: userData.registroProfissional,
         });
 
         await this.usersRepository.save(newUser);
-        this.logger.log(`Usuário padrão criado: ${userData.email} (${userData.tipo})`);
+        this.logger.log(
+          `✨ Usuário padrão criado: ${userData.email} (${userData.tipo})`,
+        );
       } else {
-        this.logger.log(`Usuário já existe: ${userData.email} (${userData.tipo})`);
+        this.logger.log(
+          `ℹ️  Usuário já existe: ${userData.email} (${userData.tipo})`,
+        );
       }
     } catch (error) {
-      this.logger.error(`Erro ao criar usuário padrão ${userData.email}: ${error.message}`);
+      this.logger.error(
+        `❌ Erro ao criar usuário padrão ${userData.email}: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+      );
     }
   }
+
+  /**
+   * Retorna todos os usuários criados para uso em outros seeds
+   */
+  async getUsers(): Promise<User[]> {
+    return await this.usersRepository.find();
+  }
+
+  /**
+   * Retorna usuários por tipo
+   */
+  async getUsersByRole(role: UserRole): Promise<User[]> {
+    return await this.usersRepository.find({
+      where: { tipo: role },
+    });
+  }
 }
-            
+
 /*             
   __  ____ ____ _  _ 
  / _\/ ___) ___) )( \

@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-  UseGuards,
-  ParseDatePipe,
-  Header,
-} from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, Header } from '@nestjs/common';
 import { ReportsService } from '../services/reports.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
@@ -77,8 +70,8 @@ export class ReportsController {
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
-    let data: any[] = []; 
-    
+    let data: any[] = [];
+
     switch (type) {
       case 'agendamentos':
         if (startDate && endDate) {
@@ -89,15 +82,16 @@ export class ReportsController {
           data = result.agendamentos;
         }
         break;
-      case 'pacientes':
+      case 'pacientes': {
         const pacientesReport = await this.reportsService.getPacientesReport();
         data = pacientesReport.porSexo; // Simplificado
         break;
+      }
       default:
         data = [];
     }
 
-    return await this.reportsService.exportToCSV(type, data);
+    return this.reportsService.exportToCSV(type, data);
   }
 }
 

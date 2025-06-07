@@ -1,4 +1,11 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 import { UserRole } from '../enums/user-role.enum';
 
 export class CreateUserDto {
@@ -20,4 +27,12 @@ export class CreateUserDto {
 
   @IsOptional()
   ativo?: boolean;
+
+  @IsOptional()
+  @IsString({ message: 'A especialidade deve ser uma string' })
+  especialidade?: string;
+
+  @IsOptional()
+  @IsString({ message: 'O registro profissional deve ser uma string' })
+  registroProfissional?: string;
 }

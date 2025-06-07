@@ -17,7 +17,10 @@ import { LocalStrategy } from './strategies/local.strategy';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: configService.get<string>('JWT_EXPIRATION_TIME') || '3600s' },
+        signOptions: {
+          expiresIn:
+            configService.get<string>('JWT_EXPIRATION_TIME') || '3600s',
+        },
       }),
       inject: [ConfigService],
     }),
@@ -27,7 +30,7 @@ import { LocalStrategy } from './strategies/local.strategy';
   exports: [AuthService],
 })
 export class AuthModule {}
-            
+
 /*             
   __  ____ ____ _  _ 
  / _\/ ___) ___) )( \

@@ -7,15 +7,13 @@ import { Paciente } from '../users/paciente/entities/paciente.entity';
 import { User } from '../users/entities/user.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Agendamento, Paciente, User]),
-  ],
+  imports: [TypeOrmModule.forFeature([Agendamento, Paciente, User])],
   controllers: [AgendamentoController],
   providers: [AgendamentoService],
   exports: [AgendamentoService],
 })
 export class AgendamentoModule {}
-            
+
 /*             
   __  ____ ____ _  _ 
  / _\/ ___) ___) )( \

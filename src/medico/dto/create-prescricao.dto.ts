@@ -1,4 +1,11 @@
-import { IsString, IsNumber, IsOptional, IsDate, IsArray, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsDate,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 class MedicamentoDto {

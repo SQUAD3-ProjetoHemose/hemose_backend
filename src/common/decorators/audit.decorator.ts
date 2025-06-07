@@ -14,7 +14,7 @@ export interface AuditOptions {
 }
 
 // Decorator para marcar métodos que devem ser auditados
-export const Audit = (options: AuditOptions = {}) => 
+export const Audit = (options: AuditOptions = {}) =>
   SetMetadata(AUDIT_METADATA_KEY, options);
 
 // Decorator para extrair dados do usuário autenticado
@@ -29,10 +29,14 @@ export const CurrentUser = createParamDecorator(
 export const ClientIP = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    return request.ip || 
-           request.connection.remoteAddress || 
-           request.socket.remoteAddress ||
-           (request.connection.socket ? request.connection.socket.remoteAddress : null);
+    return (
+      request.ip ||
+      request.connection.remoteAddress ||
+      request.socket.remoteAddress ||
+      (request.connection.socket
+        ? request.connection.socket.remoteAddress
+        : null)
+    );
   },
 );
 

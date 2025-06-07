@@ -1,13 +1,13 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Param, 
-  Query, 
-  UseGuards, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  UseGuards,
   Request,
-  ParseIntPipe 
+  ParseIntPipe,
 } from '@nestjs/common';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { UserRole } from '../../users/enums/user-role.enum';
@@ -17,9 +17,7 @@ import { CreatePrescricaoDto } from '../dto/create-prescricao.dto';
 @Controller('medico/prescricoes')
 @Roles(UserRole.MEDICO)
 export class MedicoPrescricaoController {
-  constructor(
-    private readonly prescricaoService: MedicoPrescricaoService,
-  ) {}
+  constructor(private readonly prescricaoService: MedicoPrescricaoService) {}
 
   @Get()
   async getPrescricoes(
@@ -36,7 +34,10 @@ export class MedicoPrescricaoController {
     @Request() req,
   ) {
     const medicoId = req.user.id;
-    return this.prescricaoService.criarPrescricao(createPrescricaoDto, medicoId);
+    return this.prescricaoService.criarPrescricao(
+      createPrescricaoDto,
+      medicoId,
+    );
   }
 
   @Get(':id')

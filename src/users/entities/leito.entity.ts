@@ -15,6 +15,6 @@ export class Leito {
   @Column({ length: 20 })
   status: string; // Ex: 'ocupado', 'livre', 'manutencao'
 
-  @OneToMany(() => Internacao, internacao => internacao.leito)
+  @OneToMany(() => Internacao, (internacao) => internacao.leito)
   internacoes: Internacao[];
 }

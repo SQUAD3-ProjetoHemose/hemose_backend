@@ -21,6 +21,6 @@ export class Medicamento {
   @Column({ type: 'int', default: 0 })
   estoque: number;
 
-  @OneToMany(() => Prescricao, prescricao => prescricao.medicamento)
+  @OneToMany(() => Prescricao, (prescricao) => prescricao.medicamento)
   prescricoes: Prescricao[];
 }

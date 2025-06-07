@@ -48,11 +48,11 @@ export class AuthService {
     }
 
     console.log('Login bem-sucedido:', user);
-    const payload = { 
-      sub: user.id, 
+    const payload = {
+      sub: user.id,
       email: user.email,
       nome: user.nome,
-      tipo: user.tipo 
+      tipo: user.tipo,
     };
 
     return {
@@ -62,12 +62,12 @@ export class AuthService {
         id: user.id,
         nome: user.nome,
         email: user.email,
-        tipo: user.tipo
-      }
+        tipo: user.tipo,
+      },
     };
   }
 }
-            
+
 /*             
   __  ____ ____ _  _ 
  / _\/ ___) ___) )( \

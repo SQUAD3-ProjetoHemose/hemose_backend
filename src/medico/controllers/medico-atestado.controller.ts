@@ -1,13 +1,13 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Param, 
-  Query, 
-  UseGuards, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  UseGuards,
   Request,
-  ParseIntPipe 
+  ParseIntPipe,
 } from '@nestjs/common';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { UserRole } from '../../users/enums/user-role.enum';
@@ -17,9 +17,7 @@ import { CreateAtestadoDto } from '../dto/create-atestado.dto';
 @Controller('medico/atestados')
 @Roles(UserRole.MEDICO)
 export class MedicoAtestadoController {
-  constructor(
-    private readonly atestadoService: MedicoAtestadoService,
-  ) {}
+  constructor(private readonly atestadoService: MedicoAtestadoService) {}
 
   @Get()
   async getAtestados(

@@ -14,7 +14,7 @@ export class MedicoAtestadoService {
   // Buscar atestados do médico
   async getAtestados(medicoId: number, pacienteId?: number) {
     const whereConditions: any = { medicoId };
-    
+
     if (pacienteId) {
       whereConditions.pacienteId = pacienteId;
     }
@@ -71,12 +71,7 @@ export class MedicoAtestadoService {
     const hoje = new Date();
     const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
 
-    const [
-      totalMes,
-      ativosMes,
-      canceladosMes,
-      totalGeral
-    ] = await Promise.all([
+    const [totalMes, ativosMes, canceladosMes, totalGeral] = await Promise.all([
       this.atestadoRepository.count({
         where: {
           medicoId,

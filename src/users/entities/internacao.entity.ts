@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Paciente } from '../paciente/entities/paciente.entity';
 import { Leito } from './leito.entity';
 import { Medico } from './medico.entity';
@@ -8,7 +14,7 @@ export class Internacao {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Paciente, paciente => paciente.internacoes)
+  @ManyToOne(() => Paciente, (paciente) => paciente.internacoes)
   @JoinColumn({ name: 'paciente_id' })
   paciente: Paciente;
 

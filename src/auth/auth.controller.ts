@@ -1,4 +1,14 @@
-import { Controller, Post, Body, HttpException, HttpStatus, Logger, UseGuards, Get, Request } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpException,
+  HttpStatus,
+  Logger,
+  UseGuards,
+  Get,
+  Request,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -23,20 +33,25 @@ export class AuthController {
 
       // Se o login falhou, retornar erro HTTP 401
       if (!result.success) {
-        this.logger.warn(`Falha no login para ${loginDto.email}: ${result.message}`);
-        throw new HttpException('Credenciais inválidas', HttpStatus.UNAUTHORIZED);
+        this.logger.warn(
+          `Falha no login para ${loginDto.email}: ${result.message}`,
+        );
+        throw new HttpException(
+          'Credenciais inválidas',
+          HttpStatus.UNAUTHORIZED,
+        );
       }
 
       this.logger.log(`Login bem-sucedido para: ${loginDto.email}`);
       return result;
     } catch (error) {
       this.logger.error(`Erro no login: ${error.message}`);
-      
+
       // Se já é uma HttpException, re-lançar
       if (error instanceof HttpException) {
         throw error;
       }
-      
+
       // Caso contrário, lançar erro interno do servidor
       throw new HttpException(
         'Erro interno do servidor',

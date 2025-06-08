@@ -123,7 +123,7 @@ async function bootstrap() {
 
     // Estratégia de recuperação em produção
     if (process.env.NODE_ENV === 'production') {
-      console.log('🔄 Tentativa de recuperação em 3 segundos...');
+      console.log(' Tentativa de recuperação em 3 segundos...');
       setTimeout(() => {
         process.exit(1); // Heroku reiniciará automaticamente
       }, 3000);
@@ -155,18 +155,18 @@ process.on('uncaughtException', (error: Error) => {
   });
 
   // Sair imediatamente em exceções não capturadas
-  console.log('🔥 Encerrando processo devido a erro crítico...');
+  console.log(' Encerrando processo devido a erro crítico...');
   process.exit(1);
 });
 
 // Tratamento de sinais do sistema (Heroku)
 process.on('SIGTERM', () => {
-  console.log('📡 Sinal SIGTERM recebido, encerrando graciosamente...');
+  console.log(' Sinal SIGTERM recebido, encerrando ');
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  console.log('📡 Sinal SIGINT recebido, encerrando graciosamente...');
+  console.log(' Sinal SIGINT recebido, encerrando graciosamente...');
   process.exit(0);
 });
 

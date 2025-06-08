@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Prontuario } from '../../users/entities/prontuario.entity';
@@ -34,17 +39,20 @@ export class ProntuarioEletronicoService {
     });
 
     if (!prontuario) {
-      throw new NotFoundException(`Prontuário do paciente #${pacienteId} não encontrado`);
+      throw new NotFoundException(
+        `Prontuário do paciente #${pacienteId} não encontrado`,
+      );
     }
 
     // Buscar dados relacionados
-    const [historico, anotacoes, exames, evolucoes, sinaisVitais] = await Promise.all([
-      this.getHistoricoClinico(pacienteId),
-      this.getAnotacoesMedicas(pacienteId),
-      this.getExamesPaciente(pacienteId),
-      this.getEvolucaoPaciente(pacienteId),
-      this.getSinaisVitais(pacienteId),
-    ]);
+    const [historico, anotacoes, exames, evolucoes, sinaisVitais] =
+      await Promise.all([
+        this.getHistoricoClinico(pacienteId),
+        this.getAnotacoesMedicas(pacienteId),
+        this.getExamesPaciente(pacienteId),
+        this.getEvolucaoPaciente(pacienteId),
+        this.getSinaisVitais(pacienteId),
+      ]);
 
     return {
       prontuario,
@@ -76,7 +84,11 @@ export class ProntuarioEletronicoService {
   }
 
   // Atualizar anotação médica
-  async atualizarAnotacao(id: number, updateAnotacaoDto: any, medicoId: number) {
+  async atualizarAnotacao(
+    id: number,
+    updateAnotacaoDto: any,
+    medicoId: number,
+  ) {
     const anotacao = await this.anotacaoRepository.findOne({
       where: { id },
       relations: ['medico'],
@@ -88,7 +100,9 @@ export class ProntuarioEletronicoService {
 
     // Verificar se o médico é o autor da anotação
     if (anotacao.medicoId !== medicoId) {
-      throw new ForbiddenException('Você só pode editar suas próprias anotações');
+      throw new ForbiddenException(
+        'Você só pode editar suas próprias anotações',
+      );
     }
 
     Object.assign(anotacao, updateAnotacaoDto);
@@ -139,9 +153,7 @@ export class ProntuarioEletronicoService {
       });
     }
 
-    return await query
-      .orderBy('sinais.dataRegistro', 'DESC')
-      .getMany();
+    return await query.orderBy('sinais.dataRegistro', 'DESC').getMany();
   }
 
   // Registrar evolução do paciente
@@ -183,7 +195,11 @@ export class ProntuarioEletronicoService {
   }
 
   // Atualizar resultado do exame
-  async atualizarResultadoExame(id: number, updateResultadoDto: any, profissionalId: number) {
+  async atualizarResultadoExame(
+    id: number,
+    updateResultadoDto: any,
+    profissionalId: number,
+  ) {
     const exame = await this.exameRepository.findOne({
       where: { id },
     });
@@ -212,22 +228,22 @@ export class ProntuarioEletronicoService {
     ]);
 
     const timeline = [
-      ...anotacoes.map(item => ({
+      ...anotacoes.map((item) => ({
         ...item,
         tipo: 'anotacao',
         data: item.dataAnotacao,
       })),
-      ...evolucoes.map(item => ({
+      ...evolucoes.map((item) => ({
         ...item,
         tipo: 'evolucao',
         data: item.dataEvolucao,
       })),
-      ...exames.map(item => ({
+      ...exames.map((item) => ({
         ...item,
         tipo: 'exame',
         data: item.dataSolicitacao,
       })),
-      ...sinaisVitais.map(item => ({
+      ...sinaisVitais.map((item) => ({
         ...item,
         tipo: 'sinais_vitais',
         data: item.dataRegistro,
@@ -235,13 +251,15 @@ export class ProntuarioEletronicoService {
     ];
 
     // Ordenar por data decrescente
-    return timeline.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
+    return timeline.sort(
+      (a, b) => new Date(b.data).getTime() - new Date(a.data).getTime(),
+    );
   }
 
   // Gerar relatório do prontuário
   async gerarRelatorioProntuario(pacienteId: number) {
     const prontuarioCompleto = await this.getProntuarioCompleto(pacienteId);
-    
+
     return {
       paciente: prontuarioCompleto.prontuario.paciente,
       resumo: {
@@ -270,7 +288,7 @@ export class ProntuarioEletronicoService {
       .take(10)
       .getMany();
 
-    return anotacoesRecentes.map(anotacao => ({
+    return anotacoesRecentes.map((anotacao) => ({
       paciente: anotacao.paciente,
       ultimoAtendimento: anotacao.dataAnotacao,
       tipo: 'consulta',
@@ -289,7 +307,9 @@ export class ProntuarioEletronicoService {
 
     // Verificar se o médico é o autor da anotação
     if (anotacao.medicoId !== medicoId) {
-      throw new ForbiddenException('Você só pode deletar suas próprias anotações');
+      throw new ForbiddenException(
+        'Você só pode deletar suas próprias anotações',
+      );
     }
 
     await this.anotacaoRepository.remove(anotacao);
@@ -298,19 +318,23 @@ export class ProntuarioEletronicoService {
 
   // Buscar estatísticas do prontuário
   async getEstatisticasProntuario(pacienteId: number) {
-    const [totalAnotacoes, totalEvolucoes, totalExames, totalSinaisVitais] = await Promise.all([
-      this.anotacaoRepository.count({ where: { pacienteId: pacienteId } }),
-      this.evolucaoRepository.count({ where: { pacienteId: pacienteId } }),
-      this.exameRepository.count({ where: { pacienteId: pacienteId } }),
-      this.sinaisVitaisRepository.count({ where: { pacienteId: pacienteId } }),
-    ]);
+    const [totalAnotacoes, totalEvolucoes, totalExames, totalSinaisVitais] =
+      await Promise.all([
+        this.anotacaoRepository.count({ where: { pacienteId: pacienteId } }),
+        this.evolucaoRepository.count({ where: { pacienteId: pacienteId } }),
+        this.exameRepository.count({ where: { pacienteId: pacienteId } }),
+        this.sinaisVitaisRepository.count({
+          where: { pacienteId: pacienteId },
+        }),
+      ]);
 
     return {
       totalAnotacoes,
       totalEvolucoes,
       totalExames,
       totalSinaisVitais,
-      totalRegistros: totalAnotacoes + totalEvolucoes + totalExames + totalSinaisVitais,
+      totalRegistros:
+        totalAnotacoes + totalEvolucoes + totalExames + totalSinaisVitais,
     };
   }
 }

@@ -21,16 +21,18 @@ export class FilaEsperaService {
 
     // Ordenar por prioridade (vermelho > laranja > amarelo > azul > verde)
     const ordemPrioridade = {
-      'vermelho': 1,
-      'laranja': 2,
-      'amarelo': 3,
-      'azul': 4,
-      'verde': 5,
+      vermelho: 1,
+      laranja: 2,
+      amarelo: 3,
+      azul: 4,
+      verde: 5,
     };
 
     return fila
-      .sort((a, b) => ordemPrioridade[a.prioridade] - ordemPrioridade[b.prioridade])
-      .map(item => ({
+      .sort(
+        (a, b) => ordemPrioridade[a.prioridade] - ordemPrioridade[b.prioridade],
+      )
+      .map((item) => ({
         id: item.paciente.id,
         nome: item.paciente.nome,
         prioridade: item.prioridade,
@@ -67,7 +69,7 @@ export class FilaEsperaService {
       item.status = 'em_atendimento';
       item.medicoId = medicoId;
       item.horaInicioAtendimento = new Date();
-      
+
       return await this.filaEsperaRepository.save(item);
     }
 
@@ -83,7 +85,7 @@ export class FilaEsperaService {
     if (item) {
       item.status = 'atendido';
       item.horaFimAtendimento = new Date();
-      
+
       return await this.filaEsperaRepository.save(item);
     }
 
@@ -95,14 +97,17 @@ export class FilaEsperaService {
     const hoje = new Date();
     const nascimento = new Date(dataNascimento);
     let idade = hoje.getFullYear() - nascimento.getFullYear();
-    
+
     const mesAtual = hoje.getMonth();
     const mesNascimento = nascimento.getMonth();
-    
-    if (mesAtual < mesNascimento || (mesAtual === mesNascimento && hoje.getDate() < nascimento.getDate())) {
+
+    if (
+      mesAtual < mesNascimento ||
+      (mesAtual === mesNascimento && hoje.getDate() < nascimento.getDate())
+    ) {
       idade--;
     }
-    
+
     return idade;
   }
 }

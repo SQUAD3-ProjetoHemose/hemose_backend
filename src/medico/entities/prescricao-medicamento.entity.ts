@@ -30,7 +30,7 @@ export class PrescricaoMedicamento {
   @Column({ type: 'text', nullable: true })
   observacoes: string;
 
-  @ManyToOne(() => Prescricao, prescricao => prescricao.medicamentos, {
+  @ManyToOne(() => Prescricao, (prescricao) => prescricao.medicamentos, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'prescricao_id' })

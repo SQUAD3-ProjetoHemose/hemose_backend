@@ -3,6 +3,7 @@ export enum UserRole {
   MEDICO = 'medico',
   ENFERMEIRA = 'enfermeira',
   RECEPCIONISTA = 'recepcionista',
+  TECNICA_ENFERMAGEM = 'tecnica_enfermagem', // Nova role
 }
 
 // Função auxiliar para validar roles
@@ -20,6 +21,7 @@ export function getUserRoleName(role: UserRole): string {
     [UserRole.MEDICO]: 'Médico',
     [UserRole.ENFERMEIRA]: 'Enfermeira',
     [UserRole.RECEPCIONISTA]: 'Recepcionista',
+    [UserRole.TECNICA_ENFERMAGEM]: 'Técnica de Enfermagem', // Nome amigável para nova role
   };
   return roleNames[role] || role;
 }

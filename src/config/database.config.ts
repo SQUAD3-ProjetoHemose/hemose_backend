@@ -13,7 +13,6 @@ export default registerAs('database', () => ({
   schema: 'hemose_db', // Define o schema específico no banco de dados
 }));
 
-            
 /*             
   __  ____ ____ _  _ 
  / _\/ ___) ___) )( \

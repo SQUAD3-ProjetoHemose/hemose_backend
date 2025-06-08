@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Paciente } from '../paciente/entities/paciente.entity';
 import { Medico } from './medico.entity';
 import { Medicamento } from './medicamento.entity';
@@ -8,11 +15,11 @@ export class Prescricao {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Paciente, paciente => paciente.prescricoes)
+  @ManyToOne(() => Paciente, (paciente) => paciente.prescricoes)
   @JoinColumn({ name: 'paciente_id' })
   paciente: Paciente;
 
-  @ManyToOne(() => Medico, medico => medico.prescricoes)
+  @ManyToOne(() => Medico, (medico) => medico.prescricoes)
   @JoinColumn({ name: 'medico_id' })
   medico: Medico;
 

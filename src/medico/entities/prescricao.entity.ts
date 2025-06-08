@@ -49,10 +49,14 @@ export class Prescricao {
   @Column()
   medicoId: number;
 
-  @OneToMany(() => PrescricaoMedicamento, medicamento => medicamento.prescricao, {
-    cascade: true,
-    eager: true,
-  })
+  @OneToMany(
+    () => PrescricaoMedicamento,
+    (medicamento) => medicamento.prescricao,
+    {
+      cascade: true,
+      eager: true,
+    },
+  )
   medicamentos: PrescricaoMedicamento[];
 
   @CreateDateColumn()

@@ -29,7 +29,9 @@ export class ProntuarioEletronicoController {
   // Buscar prontuário completo do paciente
   @Get('paciente/:pacienteId')
   @Roles(UserRole.ADMIN, UserRole.MEDICO, UserRole.ENFERMEIRA)
-  async getProntuarioCompleto(@Param('pacienteId', ParseIntPipe) pacienteId: number) {
+  async getProntuarioCompleto(
+    @Param('pacienteId', ParseIntPipe) pacienteId: number,
+  ) {
     return await this.prontuarioService.getProntuarioCompleto(pacienteId);
   }
 
@@ -40,13 +42,18 @@ export class ProntuarioEletronicoController {
     @Body() createAnotacaoDto: any,
     @CurrentUser() user: User,
   ) {
-    return await this.prontuarioService.criarAnotacaoMedica(createAnotacaoDto, user.id);
+    return await this.prontuarioService.criarAnotacaoMedica(
+      createAnotacaoDto,
+      user.id,
+    );
   }
 
   // Buscar anotações médicas do paciente
   @Get('anotacoes/:pacienteId')
   @Roles(UserRole.ADMIN, UserRole.MEDICO, UserRole.ENFERMEIRA)
-  async getAnotacoesMedicas(@Param('pacienteId', ParseIntPipe) pacienteId: number) {
+  async getAnotacoesMedicas(
+    @Param('pacienteId', ParseIntPipe) pacienteId: number,
+  ) {
     return await this.prontuarioService.getAnotacoesMedicas(pacienteId);
   }
 
@@ -58,7 +65,11 @@ export class ProntuarioEletronicoController {
     @Body() updateAnotacaoDto: any,
     @CurrentUser() user: User,
   ) {
-    return await this.prontuarioService.atualizarAnotacao(id, updateAnotacaoDto, user.id);
+    return await this.prontuarioService.atualizarAnotacao(
+      id,
+      updateAnotacaoDto,
+      user.id,
+    );
   }
 
   // Registrar histórico clínico
@@ -68,13 +79,18 @@ export class ProntuarioEletronicoController {
     @Body() createHistoricoDto: any,
     @CurrentUser() user: User,
   ) {
-    return await this.prontuarioService.registrarHistoricoClinico(createHistoricoDto, user.id);
+    return await this.prontuarioService.registrarHistoricoClinico(
+      createHistoricoDto,
+      user.id,
+    );
   }
 
   // Buscar histórico clínico do paciente
   @Get('historico/:pacienteId')
   @Roles(UserRole.ADMIN, UserRole.MEDICO, UserRole.ENFERMEIRA)
-  async getHistoricoClinico(@Param('pacienteId', ParseIntPipe) pacienteId: number) {
+  async getHistoricoClinico(
+    @Param('pacienteId', ParseIntPipe) pacienteId: number,
+  ) {
     return await this.prontuarioService.getHistoricoClinico(pacienteId);
   }
 
@@ -85,7 +101,10 @@ export class ProntuarioEletronicoController {
     @Body() createSinaisDto: any,
     @CurrentUser() user: User,
   ) {
-    return await this.prontuarioService.registrarSinaisVitais(createSinaisDto, user.id);
+    return await this.prontuarioService.registrarSinaisVitais(
+      createSinaisDto,
+      user.id,
+    );
   }
 
   // Buscar sinais vitais do paciente
@@ -110,30 +129,34 @@ export class ProntuarioEletronicoController {
     @Body() createEvolucaoDto: any,
     @CurrentUser() user: User,
   ) {
-    return await this.prontuarioService.registrarEvolucao(createEvolucaoDto, user.id);
+    return await this.prontuarioService.registrarEvolucao(
+      createEvolucaoDto,
+      user.id,
+    );
   }
 
   // Buscar evolução do paciente
   @Get('evolucao/:pacienteId')
   @Roles(UserRole.ADMIN, UserRole.MEDICO, UserRole.ENFERMEIRA)
-  async getEvolucaoPaciente(@Param('pacienteId', ParseIntPipe) pacienteId: number) {
+  async getEvolucaoPaciente(
+    @Param('pacienteId', ParseIntPipe) pacienteId: number,
+  ) {
     return await this.prontuarioService.getEvolucaoPaciente(pacienteId);
   }
 
   // Registrar novo exame
   @Post('exame')
   @Roles(UserRole.MEDICO)
-  async registrarExame(
-    @Body() createExameDto: any,
-    @CurrentUser() user: User,
-  ) {
+  async registrarExame(@Body() createExameDto: any, @CurrentUser() user: User) {
     return await this.prontuarioService.registrarExame(createExameDto, user.id);
   }
 
   // Buscar exames do paciente
   @Get('exames/:pacienteId')
   @Roles(UserRole.ADMIN, UserRole.MEDICO, UserRole.ENFERMEIRA)
-  async getExamesPaciente(@Param('pacienteId', ParseIntPipe) pacienteId: number) {
+  async getExamesPaciente(
+    @Param('pacienteId', ParseIntPipe) pacienteId: number,
+  ) {
     return await this.prontuarioService.getExamesPaciente(pacienteId);
   }
 
@@ -145,20 +168,28 @@ export class ProntuarioEletronicoController {
     @Body() updateResultadoDto: any,
     @CurrentUser() user: User,
   ) {
-    return await this.prontuarioService.atualizarResultadoExame(id, updateResultadoDto, user.id);
+    return await this.prontuarioService.atualizarResultadoExame(
+      id,
+      updateResultadoDto,
+      user.id,
+    );
   }
 
   // Buscar timeline completa do paciente
   @Get('timeline/:pacienteId')
   @Roles(UserRole.ADMIN, UserRole.MEDICO, UserRole.ENFERMEIRA)
-  async getTimelinePaciente(@Param('pacienteId', ParseIntPipe) pacienteId: number) {
+  async getTimelinePaciente(
+    @Param('pacienteId', ParseIntPipe) pacienteId: number,
+  ) {
     return await this.prontuarioService.getTimelinePaciente(pacienteId);
   }
 
   // Gerar relatório do prontuário
   @Get('relatorio/:pacienteId')
   @Roles(UserRole.ADMIN, UserRole.MEDICO)
-  async gerarRelatorioProntuario(@Param('pacienteId', ParseIntPipe) pacienteId: number) {
+  async gerarRelatorioProntuario(
+    @Param('pacienteId', ParseIntPipe) pacienteId: number,
+  ) {
     return await this.prontuarioService.gerarRelatorioProntuario(pacienteId);
   }
 

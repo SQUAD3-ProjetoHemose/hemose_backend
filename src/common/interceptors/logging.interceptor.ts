@@ -23,9 +23,9 @@ export class LoggingInterceptor implements NestInterceptor {
     const httpContext = context.switchToHttp();
     const request = httpContext.getRequest<Request>();
     const response = httpContext.getResponse<Response>();
-    
+
     const { method, url, ip, headers } = request;
-    
+
     // Verificar se deve excluir este path do log
     if (this.shouldExcludePath(url)) {
       return next.handle();
@@ -37,40 +37,50 @@ export class LoggingInterceptor implements NestInterceptor {
 
     // Log da requisição recebida
     this.logger.log(
-      `📥 [${requestId}] [${method}] ${url} - IP: ${ip} - UA: ${userAgent.substring(0, 50)}...`
+      `📥 [${requestId}] [${method}] ${url} - IP: ${ip} - UA: ${userAgent.substring(0, 50)}...`,
     );
 
     // Log do body se habilitado
-    if (this.config.enableRequestBody && request.body && Object.keys(request.body).length > 0) {
+    if (
+      this.config.enableRequestBody &&
+      request.body &&
+      Object.keys(request.body).length > 0
+    ) {
       const sanitizedBody = this.sanitizeBody(request.body);
       const bodyStr = JSON.stringify(sanitizedBody);
-      
+
       if (bodyStr.length <= this.config.maxBodySize) {
         this.logger.debug(`📝 [${requestId}] Body: ${bodyStr}`);
       } else {
-        this.logger.debug(`📝 [${requestId}] Body: ${bodyStr.substring(0, this.config.maxBodySize)}... (truncated)`);
+        this.logger.debug(
+          `📝 [${requestId}] Body: ${bodyStr.substring(0, this.config.maxBodySize)}... (truncated)`,
+        );
       }
     }
 
     // Log dos query params
     if (request.query && Object.keys(request.query).length > 0) {
-      this.logger.debug(`🔍 [${requestId}] Query: ${JSON.stringify(request.query)}`);
+      this.logger.debug(
+        `🔍 [${requestId}] Query: ${JSON.stringify(request.query)}`,
+      );
     }
 
     // Log dos headers importantes (autorização, content-type, etc.)
     const importantHeaders = this.extractImportantHeaders(headers);
     if (Object.keys(importantHeaders).length > 0) {
-      this.logger.debug(`📋 [${requestId}] Headers: ${JSON.stringify(importantHeaders)}`);
+      this.logger.debug(
+        `📋 [${requestId}] Headers: ${JSON.stringify(importantHeaders)}`,
+      );
     }
 
     return next.handle().pipe(
       tap((responseData) => {
         const endTime = Date.now();
         const duration = endTime - startTime;
-        
+
         // Log da resposta de sucesso
         this.logger.log(
-          `📤 [${requestId}] [${method}] ${url} - ${response.statusCode} - ${duration}ms`
+          `📤 [${requestId}] [${method}] ${url} - ${response.statusCode} - ${duration}ms`,
         );
 
         // Log do body da resposta se habilitado
@@ -79,22 +89,26 @@ export class LoggingInterceptor implements NestInterceptor {
           if (responseStr.length <= this.config.maxBodySize) {
             this.logger.debug(`📦 [${requestId}] Response: ${responseStr}`);
           } else {
-            this.logger.debug(`📦 [${requestId}] Response: ${responseStr.substring(0, this.config.maxBodySize)}... (truncated)`);
+            this.logger.debug(
+              `📦 [${requestId}] Response: ${responseStr.substring(0, this.config.maxBodySize)}... (truncated)`,
+            );
           }
         }
 
         // Log de performance para requisições lentas
         if (duration > 1000) {
-          this.logger.warn(`🐌 [${requestId}] Requisição lenta detectada: ${duration}ms`);
+          this.logger.warn(
+            `🐌 [${requestId}] Requisição lenta detectada: ${duration}ms`,
+          );
         }
       }),
       catchError((error) => {
         const endTime = Date.now();
         const duration = endTime - startTime;
-        
+
         // Log de erro
         this.logger.error(
-          `❌ [${requestId}] [${method}] ${url} - ${error.status || 500} - ${duration}ms - Error: ${error.message}`
+          `❌ [${requestId}] [${method}] ${url} - ${error.status || 500} - ${duration}ms - Error: ${error.message}`,
         );
 
         // Log detalhado para erros 5xx
@@ -104,11 +118,13 @@ export class LoggingInterceptor implements NestInterceptor {
 
         // Log de validação para erros 4xx
         if (error.status >= 400 && error.status < 500 && error.response) {
-          this.logger.debug(`🚫 [${requestId}] Validation: ${JSON.stringify(error.response)}`);
+          this.logger.debug(
+            `🚫 [${requestId}] Validation: ${JSON.stringify(error.response)}`,
+          );
         }
 
         throw error;
-      })
+      }),
     );
   }
 
@@ -123,7 +139,7 @@ export class LoggingInterceptor implements NestInterceptor {
    * Verifica se o path deve ser excluído do log
    */
   private shouldExcludePath(url: string): boolean {
-    return this.config.excludePaths.some(path => url.startsWith(path));
+    return this.config.excludePaths.some((path) => url.startsWith(path));
   }
 
   /**
@@ -135,10 +151,17 @@ export class LoggingInterceptor implements NestInterceptor {
     }
 
     const sensitiveFields = [
-      'password', 'senha', 'token', 'secret', 'key', 
-      'authorization', 'auth', 'apiKey', 'apiSecret'
+      'password',
+      'senha',
+      'token',
+      'secret',
+      'key',
+      'authorization',
+      'auth',
+      'apiKey',
+      'apiSecret',
     ];
-    
+
     const sanitized = Array.isArray(body) ? [...body] : { ...body };
 
     for (const field of sensitiveFields) {
@@ -156,8 +179,12 @@ export class LoggingInterceptor implements NestInterceptor {
   private extractImportantHeaders(headers: any): any {
     const important = {};
     const importantKeys = [
-      'content-type', 'accept', 'user-agent', 
-      'x-forwarded-for', 'x-real-ip', 'origin'
+      'content-type',
+      'accept',
+      'user-agent',
+      'x-forwarded-for',
+      'x-real-ip',
+      'origin',
     ];
 
     for (const key of importantKeys) {

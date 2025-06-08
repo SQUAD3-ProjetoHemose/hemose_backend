@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -15,13 +25,18 @@ export class UsersController {
 
   @Post()
   @Roles(UserRole.ADMIN)
-  @Audit({ action: 'CREATE', resource: 'User', includeBody: true, excludeFields: ['password'] })
+  @Audit({
+    action: 'CREATE',
+    resource: 'User',
+    includeBody: true,
+    excludeFields: ['password'],
+  })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   @Get()
-  @Roles(UserRole.ADMIN,UserRole.RECEPCIONISTA)
+  @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA)
   @Audit({ action: 'LIST', resource: 'User' })
   findAll(@Query('role') role?: UserRole) {
     if (role) {

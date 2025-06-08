@@ -8,7 +8,10 @@ import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { AuditService } from '../../audit/services/audit.service';
-import { AUDIT_METADATA_KEY, AuditOptions } from '../decorators/audit.decorator';
+import {
+  AUDIT_METADATA_KEY,
+  AuditOptions,
+} from '../decorators/audit.decorator';
 
 // Interceptor global para auditoria automática
 @Injectable()
@@ -31,7 +34,7 @@ export class AuditInterceptor implements NestInterceptor {
 
     const request = context.switchToHttp().getRequest();
     const response = context.switchToHttp().getResponse();
-    
+
     // Extrair informações da requisição
     const user = request.user;
     const method = request.method;
@@ -65,9 +68,11 @@ export class AuditInterceptor implements NestInterceptor {
         const auditData = {
           ...baseAuditData,
           status: 'SUCCESS',
-          ...(auditOptions.includeResponse && data ? { details: { ...baseAuditData.details, response: data } } : {}),
+          ...(auditOptions.includeResponse && data
+            ? { details: { ...baseAuditData.details, response: data } }
+            : {}),
         };
-        
+
         this.auditService.createLog(auditData);
       }),
       catchError((error) => {
@@ -84,7 +89,7 @@ export class AuditInterceptor implements NestInterceptor {
             },
           },
         };
-        
+
         this.auditService.createLog(auditData);
         throw error;
       }),
@@ -94,11 +99,11 @@ export class AuditInterceptor implements NestInterceptor {
   // Mapear método HTTP para ação
   private getActionFromMethod(method: string): string {
     const methodMapping: { [key: string]: string } = {
-      'GET': 'READ',
-      'POST': 'create',
-      'PUT': 'update',
-      'PATCH': 'update',
-      'DELETE': 'delete',
+      GET: 'READ',
+      POST: 'create',
+      PUT: 'update',
+      PATCH: 'update',
+      DELETE: 'delete',
     };
 
     return methodMapping[method.toUpperCase()] || method.toLowerCase();
@@ -107,7 +112,9 @@ export class AuditInterceptor implements NestInterceptor {
   // Extrair recurso da URL
   private getResourceFromUrl(url: string): string {
     try {
-      const pathSegments = url.split('/').filter(segment => segment && segment !== 'api');
+      const pathSegments = url
+        .split('/')
+        .filter((segment) => segment && segment !== 'api');
       if (pathSegments.length > 0) {
         return pathSegments[0];
       }
@@ -119,11 +126,13 @@ export class AuditInterceptor implements NestInterceptor {
 
   // Extrair IP do cliente
   private getClientIP(request: any): string {
-    return request.ip || 
-           request.connection?.remoteAddress || 
-           request.socket?.remoteAddress ||
-           request.headers['x-forwarded-for']?.split(',')[0] ||
-           'unknown';
+    return (
+      request.ip ||
+      request.connection?.remoteAddress ||
+      request.socket?.remoteAddress ||
+      request.headers['x-forwarded-for']?.split(',')[0] ||
+      'unknown'
+    );
   }
 
   // Construir detalhes da auditoria
@@ -137,19 +146,19 @@ export class AuditInterceptor implements NestInterceptor {
     // Incluir corpo da requisição se habilitado
     if (options.includeBody && request.body) {
       const body = { ...request.body };
-      
+
       // Remover campos sensíveis
       if (options.excludeFields) {
-        options.excludeFields.forEach(field => {
+        options.excludeFields.forEach((field) => {
           delete body[field];
         });
       }
-      
+
       // Sempre remover campos de senha
       delete body.password;
       delete body.senha;
       delete body.passwordConfirmation;
-      
+
       details.requestBody = body;
     }
 
@@ -167,7 +176,10 @@ export class AuditInterceptor implements NestInterceptor {
   }
 
   // Extrair ID do recurso
-  private extractResourceId(request: any, options: AuditOptions): number | undefined {
+  private extractResourceId(
+    request: any,
+    options: AuditOptions,
+  ): number | undefined {
     // Tentar extrair do parâmetro 'id' na rota
     if (request.params?.id) {
       const id = parseInt(request.params.id);

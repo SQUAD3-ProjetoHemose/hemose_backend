@@ -19,6 +19,7 @@ import { ReportsModule } from './reports/reports.module';
 import { AuditModule } from './audit/audit.module';
 import { ProntuarioEletronicoModule } from './prontuario-eletronico/prontuario-eletronico.module';
 import { MedicoModule } from './medico/medico.module'; // Novo módulo médico
+import { EnfermagemModule } from './enfermagem/enfermagem.module'; // Novo módulo de enfermagem
 import { SeedModule } from './seed/seed.module';
 
 // Entidades do banco de dados
@@ -38,6 +39,10 @@ import { Prescricao } from './medico/entities/prescricao.entity';
 import { PrescricaoMedicamento } from './medico/entities/prescricao-medicamento.entity';
 import { Template } from './medico/entities/template.entity';
 import { FilaEspera } from './medico/entities/fila-espera.entity';
+
+// Entidades do módulo de enfermagem
+import { Triagem } from './enfermagem/entities/triagem.entity';
+import { EvolucaoEnfermagem } from './enfermagem/entities/evolucao-enfermagem.entity';
 
 @Module({
   imports: [
@@ -86,6 +91,9 @@ import { FilaEspera } from './medico/entities/fila-espera.entity';
           PrescricaoMedicamento,
           Template,
           FilaEspera,
+
+          Triagem,
+          EvolucaoEnfermagem,
         ],
         synchronize: configService.get<string>('NODE_ENV') !== 'production',
         logging: configService.get<string>('NODE_ENV') === 'development',
@@ -101,6 +109,7 @@ import { FilaEspera } from './medico/entities/fila-espera.entity';
     AgendamentoModule,
     ProntuarioEletronicoModule,
     MedicoModule, // Adicionar o novo módulo médico
+    EnfermagemModule, // Adicionar o novo módulo de enfermagem
     ReportsModule,
     AuditModule,
     SeedModule,

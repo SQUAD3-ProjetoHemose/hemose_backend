@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { Paciente } from '../paciente/entities/paciente.entity';
 import { Medico } from './medico.entity';
 import { HistoricoPaciente } from './historico-paciente.entity'; // Assuming this entity will be created
@@ -22,7 +30,7 @@ export class Prontuario {
   @Column({ type: 'text' })
   descricao: string;
 
-  @OneToMany(() => HistoricoPaciente, historico => historico.prontuario)
+  @OneToMany(() => HistoricoPaciente, (historico) => historico.prontuario)
   historicos: HistoricoPaciente[];
 
   @CreateDateColumn()

@@ -1,6 +1,6 @@
 /**
  * Script para redefinir a senha de um usuário no banco de dados
- * 
+ *
  * Como usar:
  * 1. Compile o projeto: npm run build
  * 2. Execute o script: node dist/scripts/reset-password.js <email> <nova-senha>
@@ -16,14 +16,14 @@ config();
 
 async function resetPassword() {
   const args = process.argv.slice(2);
-  
+
   if (args.length !== 2) {
     console.error('Uso: node reset-password.js <email> <nova-senha>');
     process.exit(1);
   }
-  
+
   const [email, newPassword] = args;
-  
+
   try {
     // Conecta ao banco de dados usando as variáveis de ambiente
     const connection = await createConnection({
@@ -36,27 +36,29 @@ async function resetPassword() {
       entities: [User],
       synchronize: false,
     });
-    
+
     const userRepository = connection.getRepository(User);
-    
+
     // Busca o usuário pelo email
     const user = await userRepository.findOne({ where: { email } });
-    
+
     if (!user) {
       console.error(`Usuário com email ${email} não encontrado.`);
       await connection.close();
       process.exit(1);
     }
-    
+
     // Gera o hash da nova senha
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    
+
     // Atualiza a senha do usuário
     user.senha = hashedPassword;
     await userRepository.save(user);
-    
-    console.log(`Senha redefinida com sucesso para o usuário ${user.nome} (${email}).`);
-    
+
+    console.log(
+      `Senha redefinida com sucesso para o usuário ${user.nome} (${email}).`,
+    );
+
     await connection.close();
     process.exit(0);
   } catch (error) {
@@ -66,8 +68,8 @@ async function resetPassword() {
 }
 
 // Executa a função principal
-resetPassword();
-            
+void resetPassword();
+
 /*             
   __  ____ ____ _  _ 
  / _\/ ___) ___) )( \

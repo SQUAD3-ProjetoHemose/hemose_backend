@@ -36,7 +36,11 @@ export class MedicoTemplateService {
   }
 
   // Atualizar template
-  async atualizarTemplate(id: number, updateData: Partial<CreateTemplateDto>, medicoId: number) {
+  async atualizarTemplate(
+    id: number,
+    updateData: Partial<CreateTemplateDto>,
+    medicoId: number,
+  ) {
     const template = await this.templateRepository.findOne({
       where: { id, medicoId }, // Só pode atualizar seus próprios templates
     });
@@ -71,7 +75,7 @@ export class MedicoTemplateService {
   // Buscar template por ID
   async getTemplateById(id: number, medicoId?: number) {
     const whereConditions: any = { id, ativo: true };
-    
+
     // Se medicoId fornecido, buscar apenas templates do médico ou padrão
     if (medicoId) {
       return await this.templateRepository.findOne({

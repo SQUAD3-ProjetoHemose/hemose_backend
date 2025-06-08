@@ -1,13 +1,13 @@
-import { 
-  Controller, 
-  Post, 
-  Patch, 
-  Get, 
-  Param, 
-  Body, 
-  UseGuards, 
+import {
+  Controller,
+  Post,
+  Patch,
+  Get,
+  Param,
+  Body,
+  UseGuards,
   Request,
-  ParseIntPipe 
+  ParseIntPipe,
 } from '@nestjs/common';
 import { Roles } from '../../auth/decorators/roles.decorator';
 
@@ -17,9 +17,7 @@ import { MedicoAtendimentoService } from '../services/medico-atendimento.service
 @Controller('medico/atendimento')
 @Roles(UserRole.MEDICO)
 export class MedicoAtendimentoController {
-  constructor(
-    private readonly atendimentoService: MedicoAtendimentoService,
-  ) {}
+  constructor(private readonly atendimentoService: MedicoAtendimentoService) {}
 
   @Post('iniciar/:pacienteId')
   async iniciarAtendimento(
@@ -37,7 +35,11 @@ export class MedicoAtendimentoController {
     @Request() req,
   ) {
     const medicoId = req.user.id;
-    return this.atendimentoService.finalizarAtendimento(atendimentoId, dados, medicoId);
+    return this.atendimentoService.finalizarAtendimento(
+      atendimentoId,
+      dados,
+      medicoId,
+    );
   }
 
   @Get('historico/:pacienteId')
